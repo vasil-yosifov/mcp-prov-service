@@ -1,0 +1,170 @@
+@startuml
+title OCS provisioning — full schema
+
+package "Entities" {
+  class Subscriber {
+    +subscriberId : string
+    businessAccountId : string
+    msisdn : string
+    imsi : string
+    iccId : string
+    currentState : string
+    previousState : string
+    creationDate : date-time
+    lastTransitionDate : date-time
+    activationDate : date-time
+    expirationDate : date-time
+    languageId : string
+    carrierId : string
+    subscriberType : string
+    personalInfo.firstName : string
+    personalInfo.lastName : string
+    personalInfo.dateOfBirth : date
+    personalInfo.email : string
+    personalInfo.contactNumber : string
+    billing.billingCycle : string
+    billing.billcycleDay : integer
+    billing.billingAddress.street : string
+    billing.billingAddress.city : string
+    billing.billingAddress.state : string
+    billing.billingAddress.zipCode : string
+    billing.billingAddress.country : string
+    groups[] : string
+    subscriptions[] : string
+    notificationAddresses[] : string
+    services.voice : boolean
+    services.sms : boolean
+    services.mms : boolean
+    services.data : boolean
+    services.roaming : boolean
+    services.valueAddedServices[] : string
+    customFields.* : string
+    lastModifiedDate : date-time
+    timers[] : string
+  }
+
+  class Subscription {
+    +subscriptionId : string
+    subscriberId : string
+    subscriptionType : string
+    offerId : string
+    offerName : string
+    state : string
+    creationDate : date-time
+    activationDate : date-time
+    expirationDate : date-time
+    renewalDate : date-time
+    recurring : boolean
+    paidFlag : boolean
+    isGroup : boolean
+    maxRecurringCycles : integer
+    recurringCyclesCompleted : integer
+    cycleLengthUnits : integer
+    cycleLengthType : string
+    customParameters.* : string
+    balances[] : string
+    lastModifiedDate : date-time
+    timers[] : string
+  }
+
+  class Balance {
+    +balanceId : string
+    subscriptionId : string
+    effectiveDate : date-time
+    expirationDate : date-time
+    creationDate : date-time
+    lastModifiedDate : date-time
+    balanceType : string
+    unitType : enum
+    balanceAmount : number
+    balanceAvailable : number
+    isGroupBalance : boolean
+    isRecurring : boolean
+    cycleLengthType : string
+    cycleLengthUnits : integer
+    maxRecurringCycles : integer
+    recurringCyclesCompleted : integer
+    maxRolloverAmount : number
+    rolloverAmount : number
+    isRolloverAllowed : boolean
+  }
+
+  class Group {
+    +groupId : string
+    groupName : string
+    groupType : string
+    state : string
+    createdDate : date-time
+    modifiedDate : date-time
+    expirationDate : date-time
+    groupOwner.subscriberId : string
+    groupOwner.role : enum
+    groupOwner.memberSince : date-time
+    members[] : string
+    subscriptions[] : string
+    notificationAddresses[] : string
+    settings.maxMembers : integer
+    settings.autoRenew : boolean
+    settings.quotaDistribution : string
+    customFields.* : string
+    lastModifiedDate : date-time
+    timers[] : string
+  }
+
+  class NotificationAddress {
+    +notificationAddressId : string
+    notificationType : enum
+    notificationAddress : string
+    lastNotificationDate : date-time
+    createdDate : date-time
+    modifiedDate : date-time
+    expirationDate : date-time
+  }
+
+  class Timer {
+    +timerId : string
+    timerEntityId : string
+    timerName : string
+    timerExecutionRelativePeriod : integer
+    timerExecutionDate : date-time
+    createdDate : date-time
+    modifiedDate : date-time
+    expirationDate : date-time
+  }
+
+  class AccountHistory {
+    +interactionId : string
+    entityId : string
+    entityType : enum
+    creationDate : date-time
+    description : string
+    direction : string
+    reason : string
+    status : string
+    statusChangeDate : date-time
+    attachment.id : string
+    attachment.url : string
+    attachment.type : string
+    channel : string
+    interactionDate.startDateTime : date-time
+    interactionDate.endDateTime : date-time
+  }
+}
+
+' Associations / cardinality
+Subscriber "1" -- "0..*" Subscription : owns
+Subscription "1" -- "0..*" Balance : has
+Group "1" -- "0..*" Subscriber : has_members
+Group "1" -- "0..*" Subscription : has_subscriptions
+Subscriber "1" -- "0..*" NotificationAddress : has
+
+' Timers are associated to an entity (Subscriber / Subscription / Group) via timerEntityId
+Timer "0..*" --> "1" Subscriber : "timerEntityId = subscriberId (optional)"
+Timer "0..*" --> "1" Subscription : "timerEntityId = subscriptionId (optional)"
+Timer "0..*" --> "1" Group : "timerEntityId = groupId (optional)"
+
+' AccountHistory entries relate to entities (subscriber/group/account)
+AccountHistory "0..*" --> "1" Subscriber : "entityId when entityType=SUBSCRIBER"
+AccountHistory "0..*" --> "1" Group : "entityId when entityType=GROUP"
+
+@enduml

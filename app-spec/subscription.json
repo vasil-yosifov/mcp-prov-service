@@ -1,0 +1,32 @@
+{
+    "subscriberId": "SUB123456789",
+    "subscriptionId": "SUBSCRIPTION001",
+    "subscriptionType": "POSTPAID", 
+    "offerId": "10066",
+    "offerName": "Ultimate 5G",
+    "state": "ACTIVE",
+    "creationDate": "2021-12-01T10:00:00Z",
+    "activationDate": "2021-12-05T09:00:00Z",
+    "expirationDate": "2023-12-31T23:59:59Z",
+    "renewalDate": "2024-01-01T00:00:00Z",
+    "recurring": true,
+    "paidFlag": true,
+    "isGroup" : false,
+    "maxRecurringCycles": 12,
+    "recurringCyclesCompleted": 11,
+    "cycleLengthUnits": 7,
+    "cycleLengthType": "days",
+    "customParameters": {
+        "param1": "value1",
+        "param2": "value2"
+    },
+    "balances": [
+        "BALANCE123456",
+        "BALANCE789012"
+    ],
+    "lastModifiedDate": "2024-01-20T10:00:00Z",
+    "timers": [
+        "TIMER123456",
+        "TIMER789012"
+    ]
+}

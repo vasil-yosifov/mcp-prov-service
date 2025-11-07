@@ -1,0 +1,21 @@
+{
+    "interactionId": "INT-2023-001",
+    "entityId": "27123456789",
+    "entityType": "SUBSCRIBER",
+    "creationDate": "2023-11-14T10:30:00Z",
+    "description": "Customer inquiry about data bundle",
+    "direction": "inbound",
+    "reason": "Bundle Information Request",
+    "status": "completed",
+    "statusChangeDate": "2023-11-14T10:45:00Z",
+    "attachment": {
+        "id": "ATT-001",
+        "url": "https://example.com/attachments/chat-transcript-001",
+        "type": "chat-transcript"
+    },
+    "channel": "CRM",
+    "interactionDate": {
+        "startDateTime": "2023-11-14T10:30:00Z",
+        "endDateTime": "2023-11-14T10:45:00Z"
+    }
+}

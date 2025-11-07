@@ -1,0 +1,67 @@
+{
+    "subscriberId": "SUB123456789",
+    "businessAccountId": "ACC987654321",
+    "msisdn": "43664123456789",
+    "imsi": "232010123456789",
+    "iccId": "89014103211118510720",
+    "currentState": "ACTIVE",
+    "previousState": "PREPROVISIONED",
+    "creationDate": "2021-12-01T10:00:00Z",
+    "lastTransitionDate": "2023-11-15T14:30:00Z",
+    "activationDate": "2021-12-05T09:00:00Z",
+    "expirationDate": "2037-12-31T23:59:59Z",
+    "languageId": "EN",
+    "carrierId": "CARRIER001",
+    "subscriberType": "INDIVIDUAL",
+    "personalInfo": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "dateOfBirth": "1985-03-15",
+        "email": "john.doe@email.com",
+        "contactNumber": "+1-555-0123"
+    },
+    "billing": {
+        "billingCycle": "MONTHLY",
+        "billcycleDay": 1,
+        "billingAddress": {
+            "street": "123 Main St",
+            "city": "Springfield",
+            "state": "IL",
+            "zipCode": "62701",
+            "country": "USA"
+        }
+    },
+    "groups": [
+        "GRP123456789",
+        "GRP50002"
+    ],
+    "subscriptions": [
+        "SUBSCRIPTION001",
+        "SUBSCRIPTION002"
+    ],
+    "notificationAddresses": [
+        "NOTIF123456-SMS-001",
+        "NOTIF123456-EMAIL-001"
+    ],
+    "services": {
+        "voice": true,
+        "sms": true,
+        "mms": true,
+        "data": true,
+        "roaming": false,
+        "valueAddedServices": [
+            "voicemail",
+            "callWaiting",
+            "internationalCalls"
+        ]
+    },
+    "customFields": {
+        "field1": "customValue1",
+        "field2": "customValue2"
+    },
+    "lastModifiedDate": "2024-01-20T10:00:00Z",
+    "timers": [
+        "TIMER123456",
+        "TIMER789012"
+    ]   
+}

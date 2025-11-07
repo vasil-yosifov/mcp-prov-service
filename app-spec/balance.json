@@ -1,0 +1,21 @@
+{
+    "subscriptionId": "SUBSCRIPTION001",
+    "balanceId": "BAL123456",
+    "effectiveDate": "2023-11-01T00:00:00Z",
+    "expirationDate": "2023-11-30T23:59:59Z",
+    "creationDate": "2023-11-01T00:00:00Z",
+    "lastModifiedDate": "2023-11-15T12:00:00Z",
+    "balanceType": "ALLOWANCE",
+    "unitType": "BYTES",
+    "balanceAmount": 5000,
+    "balanceAvailable": 3500,
+    "isGroupBalance": false,
+    "isRecurring": true,
+    "cycleLengthType": "months",
+    "cycleLengthUnits": 1,
+    "maxRecurringCycles": 12,
+    "recurringCyclesCompleted": 10,
+    "maxRolloverAmount": 2000,
+    "rolloverAmount": 1500,
+    "isRolloverAllowed": true
+}

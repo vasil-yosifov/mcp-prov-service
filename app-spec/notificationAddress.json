@@ -1,0 +1,9 @@
+{
+    "notificationAddressId": "NOTIF123456-SMS-001",
+    "notificationType": "SMS",
+    "notificationAddress": "43660223456789",
+    "lastNotificationDate": "2024-01-15T12:00:00Z",
+    "createdDate": "2024-01-20T10:00:00Z",
+    "modifiedDate": "2024-01-20T10:00:00Z",
+    "expirationDate": "2037-01-20T10:00:00Z"
+}

@@ -1,0 +1,42 @@
+{
+    "groupId": "GRP123456789",
+    "groupName": "Family Share Plan",
+    "groupType": "FAMILY",
+    "state": "ACTIVE",
+    "createdDate": "2024-01-20T10:00:00Z",
+    "modifiedDate": "2024-01-20T10:00:00Z",
+    "expirationDate": "2037-01-20T10:00:00Z",
+
+    "groupOwner": {
+        "subscriberId": "SUB123456789",
+        "role": "GROUP_ADMIN",
+        "memberSince": "2024-01-20T10:00:00Z"
+    },
+    "members": [
+        "SUB123456789",
+        "SUB987654321",
+        "SUB456789123"
+    ],
+    "subscriptions": [
+        "SUBSCRIPTION001",
+        "SUBSCRIPTION003"
+    ],
+    "notificationAddresses": [
+        "NOTIF123456-SMS-001",
+        "NOTIF123456-EMAIL-001"
+    ],
+    "settings": {
+        "maxMembers": 5,
+        "autoRenew": true,
+        "quotaDistribution": "EQUAL"
+    },
+    "customFields": {
+        "field1": "customValue1",
+        "field2": "customValue2"
+    },
+    "lastModifiedDate": "2024-01-20T10:00:00Z",
+    "timers": [
+        "TIMER123456",
+        "TIMER789012"
+    ]
+}
