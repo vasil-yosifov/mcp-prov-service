@@ -1,0 +1,77 @@
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: ocs-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ocs_provisioning_dev}
+      MYSQL_USER: ${MYSQL_USER:-ocsuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ocspass}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ocs-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # OCS Provisioning REST Service
+  ocs-provisioning:
+    image: com.telecom.ocs.provisioning/ocs-provisioning-service:0.0.1-SNAPSHOT
+    container_name: ocs-provisioning-service
+    environment:
+      # Spring Profile
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      
+      # Database Configuration
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-ocs_provisioning_dev}
+      DB_USER: ${MYSQL_USER:-ocsuser}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-ocspass}
+      
+      # Server Configuration
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      
+      # Logging Configuration
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      
+      # JVM Memory Settings (optional override)
+      JAVA_OPTS: ${JAVA_OPTS:--XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0}
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ocs-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health-check"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+networks:
+  ocs-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

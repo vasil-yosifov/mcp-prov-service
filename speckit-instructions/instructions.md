@@ -14,3 +14,6 @@ The project will be developed using Java 17 and will integrate Spring Boot for a
 
 # /speckit.tasks
 Break the specification into simple implementable tasks.
+
+# /speckit.implement 
+Implement tasks T001 through T013. For each completed task, update the tasks.md file to reflect its implementation status. If any task is underspecified, request clarification before proceeding.

@@ -1,0 +1,15 @@
+.git
+.gitignore
+.specify/
+app-spec/*
+.vscode/
+specs/
+target/*
+!target/*.jar
+**/target/*
+!**/target/*.jar
+Dockerfile*
+README.md
+*.iml
+.idea/
+*.log

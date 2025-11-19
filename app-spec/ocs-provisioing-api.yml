@@ -1541,27 +1541,26 @@ components:
           type: string
       required:
         - subscriberId
+    
+    PatchOperation:
+      type: object
+      description: A single patch operation containing fieldName and fieldValue
+      properties:
+        fieldName:
+          type: string
+          description: JSON field name (dot notation supported for nested fields) to update
+        fieldValue:
+          description: New value for the field. Type is determined by the field being updated (string, number, boolean, object, or array).
+      required:
+        - fieldName
+        - fieldValue
+    
     PatchField:
       type: array
       description: Array of patch objects. Each item must include fieldName and fieldValue.
+      minItems: 1
       items:
-        type: object
-        properties:
-          fieldName:
-            type: string
-            description: JSON field name (dot notation supported for nested fields) to update
-          fieldValue:
-            description: New value for the field. Type is determined by the field being updated.
-            oneOf:
-              - type: string
-              - type: number
-              - type: boolean
-              - type: object
-              - type: array
-        required:
-          - fieldName
-          - fieldValue
-        minItems: 1
+        $ref: '#/components/schemas/PatchOperation'
 
   examples:
     TimerExample:
