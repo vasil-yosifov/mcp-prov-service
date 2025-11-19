@@ -7,22 +7,8 @@
     <contextName>${APP_NAME}</contextName>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp>
-                    <timeZone>UTC</timeZone>
-                </timestamp>
-                <pattern>
-                    <pattern>{"level":"%level","logger":"%logger","thread":"%thread"}</pattern>
-                </pattern>
-                <loggerName/>
-                <threadName/>
-                <logLevel/>
-                <message/>
-                <arguments/>
-                <stackTrace/>
-                <mdc/>
-            </providers>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
 
