@@ -51,10 +51,16 @@ mvn clean verify
 
 ### Option 1: Docker Compose (Recommended)
 
+Build the application and Docker image:
+
+```bash
+mvn clean package -DskipTests
+```
+
 Start both REST service and MySQL database:
 
 ```bash
-docker-compose up --build
+docker-compose up -d
 ```
 
 Service will be available at: `http://localhost:8080/ocs/prov/v1`
@@ -84,7 +90,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 Or run packaged JAR:
 
 ```bash
-java -jar target/ocs-provisioning-service-1.0.0.jar --spring.profiles.active=dev
+java -jar target/ocs-provisioning-service-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
 ```
 
 ### Option 3: IDE (IntelliJ IDEA / Eclipse)
@@ -102,7 +108,7 @@ java -jar target/ocs-provisioning-service-1.0.0.jar --spring.profiles.active=dev
 | `SPRING_PROFILES_ACTIVE` | Active profile (dev/test/prod) | `dev` |
 | `DB_HOST` | MySQL host | `localhost` |
 | `DB_PORT` | MySQL port | `3306` |
-| `DB_NAME` | Database name | `ocs_provisioning` |
+| `DB_NAME` | Database name | `ocs_provisioning_dev` |
 | `DB_USER` | Database username | `ocsuser` |
 | `DB_PASSWORD` | Database password | `ocspass` |
 | `SERVER_PORT` | REST service port | `8080` |
@@ -139,7 +145,7 @@ Fix schema inconsistencies or apply updates:
 Connect to MySQL container:
 
 ```bash
-docker exec -it mcp-prov-service-mysql mysql -u ocsuser -pocspass ocs_provisioning
+docker exec -it mysql mysql -u ocsuser -pocspass ocs_provisioning_dev
 ```
 
 ## API Usage
@@ -232,7 +238,7 @@ docker ps | grep mysql
 Check MySQL logs:
 
 ```bash
-docker logs mcp-prov-service-mysql
+docker logs mysql
 ```
 
 ### Application Won't Start
@@ -240,7 +246,7 @@ docker logs mcp-prov-service-mysql
 Check application logs:
 
 ```bash
-docker logs mcp-prov-service-app
+docker logs ocs-provisioning-service
 ```
 
 Verify Java version:
@@ -295,7 +301,8 @@ mvn verify
 ### 4. Rebuild Container
 
 ```bash
-docker-compose up --build
+mvn clean package -DskipTests
+docker-compose up -d
 ```
 
 ### 5. Manual Testing
@@ -315,14 +322,16 @@ git push origin 001-ocs-provisioning-service
 ### Build Production Image
 
 ```bash
-mvn clean package -Pprod
-docker build -t ocs-provisioning-service:1.0.0 .
+mvn clean package -Pprod -DskipTests
 ```
+
+This automatically builds the Docker image using the fabric8 docker-maven-plugin. The image will be tagged as:
+`com.telecom.ocs.provisioning/ocs-provisioning-service:0.0.1-SNAPSHOT`
 
 ### Tag and Push to Registry
 
 ```bash
-docker tag ocs-provisioning-service:1.0.0 registry.example.com/ocs-provisioning-service:1.0.0
+docker tag com.telecom.ocs.provisioning/ocs-provisioning-service:0.0.1-SNAPSHOT registry.example.com/ocs-provisioning-service:1.0.0
 docker push registry.example.com/ocs-provisioning-service:1.0.0
 ```
 
@@ -373,5 +382,5 @@ http://localhost:8080/actuator/info
 For issues or questions:
 1. Check troubleshooting section above
 2. Review specification and data model documentation
-3. Check application logs (`docker logs mcp-prov-service-app`)
+3. Check application logs (`docker logs ocs-provisioning-service`)
 4. Open issue in repository issue tracker

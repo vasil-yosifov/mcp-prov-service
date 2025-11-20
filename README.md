@@ -10,7 +10,7 @@ Java 17 Spring Boot microservice for managing telecom subscribers, subscriptions
 - Apache Camel
 - Springdoc OpenAPI
 - Testcontainers (MySQL)
-- Docker / Jib
+- Docker / fabric8 docker-maven-plugin
 
 ## Quickstart
 
@@ -63,23 +63,34 @@ Once running, OpenAPI/Swagger UI is available at:
 
 ### Docker
 
-Build container image via Jib:
+Build the application and Docker image automatically:
 
 ```bash
-mvn compile jib:dockerBuild
+mvn clean package -DskipTests
 ```
 
-Then run the container (example):
+The fabric8 docker-maven-plugin automatically builds the Docker image during the `package` phase. The image is tagged as:
+`com.telecom.ocs.provisioning/ocs-provisioning-service:0.0.1-SNAPSHOT`
+
+Run the container:
 
 ```bash
 docker run --rm -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
-  -e DB_HOST=your-mysql-host \
+  -e SPRING_PROFILES_ACTIVE=dev \
+  -e DB_HOST=host.docker.internal \
   -e DB_PORT=3306 \
-  -e DB_NAME=ocs_provisioning \
+  -e DB_NAME=ocs_provisioning_dev \
   -e DB_USER=ocsuser \
   -e DB_PASSWORD=ocspass \
-  ocs-provisioning-service:latest
+  com.telecom.ocs.provisioning/ocs-provisioning-service:0.0.1-SNAPSHOT
 ```
+
+Alternatively, use docker-compose for a complete environment (MySQL + App):
+
+```bash
+docker-compose up -d
+```
+
+This starts both the MySQL database and the application with preconfigured settings.
 
 For more detailed scenarios, see `specs/001-ocs-provisioning-service/quickstart.md`.
