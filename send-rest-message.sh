@@ -16,8 +16,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo "=========================================="
-echo "Subscriber API Integration Tests"
-echo "Testing T047-T054 Implementation"
+echo "REST Message Sender"
+echo "Send HTTP requests to the SPR API"
 echo "=========================================="
 echo ""
 
