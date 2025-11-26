@@ -1,0 +1,23 @@
+'{
+  "msisdn": "436602238811",
+  "imsi": "232016602238811",
+  "languageId": "EN",
+  "carrierId": "CARRIER001",
+  "subscriberType": "INDIVIDUAL",
+  "personalInfo": {
+    "firstName": "Vasil",
+    "lastName": "Yosifov",
+    "dateOfBirth": "1990-01-15",
+    "email": "vasil.yosifov@example.com",
+    "contactNumber": "436602238811"
+  },
+  "billing": {
+    "billingCycle": "MONTHLY",
+    "billcycleDay": 1,
+    "billingAddress": {
+      "street": "Attemsgasse 44",
+      "city": "Vienna",
+      "country": "Austria"
+    }
+  }
+}'

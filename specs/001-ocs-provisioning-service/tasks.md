@@ -89,25 +89,25 @@ Single backend REST microservice structure:
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T039 [P] [US1] Write integration test for POST /subscribers (create subscriber) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
-- [ ] T040 [P] [US1] Write integration test for GET /subscribers/{id} (retrieve subscriber) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
-- [ ] T041 [P] [US1] Write integration test for GET /subscribers/lookup (lookup by msisdn/imsi/name) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
-- [ ] T042 [P] [US1] Write integration test for PATCH /subscribers/{id} (update subscriber state) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
-- [ ] T043 [P] [US1] Write integration test for DELETE /subscribers/{id} (delete subscriber) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
-- [ ] T044 [P] [US1] Write integration test for duplicate msisdn validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
-- [ ] T045 [P] [US1] Write repository test for SubscriberRepository in src/test/java/com/telecom/ocs/provisioning/repository/SubscriberRepositoryTest.java
-- [ ] T046 [P] [US1] Write unit test for SubscriberService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/SubscriberServiceTest.java
+- [x] T039 [P] [US1] Write integration test for POST /subscribers (create subscriber) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
+- [x] T040 [P] [US1] Write integration test for GET /subscribers/{id} (retrieve subscriber) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
+- [x] T041 [P] [US1] Write integration test for GET /subscribers/lookup (lookup by msisdn/imsi/name) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
+- [x] T042 [P] [US1] Write integration test for PATCH /subscribers/{id} (update subscriber state) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
+- [x] T043 [P] [US1] Write integration test for DELETE /subscribers/{id} (delete subscriber) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
+- [x] T044 [P] [US1] Write integration test for duplicate msisdn validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriberIntegrationTest.java
+- [x] T045 [P] [US1] Write repository test for SubscriberRepository in src/test/java/com/telecom/ocs/provisioning/repository/SubscriberRepositoryTest.java
+- [x] T046 [P] [US1] Write unit test for SubscriberService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/SubscriberServiceTest.java
 
 ### Implementation for User Story 1
 
-- [ ] T047 [US1] Create Subscriber JPA entity with @Entity, lifecycle states, validation annotations in src/main/java/com/telecom/ocs/provisioning/models/Subscriber.java
-- [ ] T048 [US1] Create SubscriberRepository extending JpaRepository with custom queries in src/main/java/com/telecom/ocs/provisioning/repositories/SubscriberRepository.java
-- [ ] T049 [US1] Implement SubscriberService with CRUD operations, state transitions, cascade delete logic in src/main/java/com/telecom/ocs/provisioning/services/SubscriberService.java
-- [ ] T050 [US1] Create SubscriberMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/SubscriberMapper.java
-- [ ] T051 [US1] Implement SubscriberController implementing generated SubscribersApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/SubscriberController.java
-- [ ] T052 [US1] Add msisdn format validation (@Pattern annotation) and uniqueness constraint handling
-- [ ] T053 [US1] Add previousState and lastTransitionDate update logic on state changes
-- [ ] T054 [US1] Add logging for subscriber lifecycle operations (creation, state transitions, deletion)
+- [x] T047 [US1] Create Subscriber JPA entity with @Entity, lifecycle states, validation annotations in src/main/java/com/telecom/ocs/provisioning/models/Subscriber.java
+- [x] T048 [US1] Create SubscriberRepository extending JpaRepository with custom queries in src/main/java/com/telecom/ocs/provisioning/repositories/SubscriberRepository.java
+- [x] T049 [US1] Implement SubscriberService with CRUD operations, state transitions, cascade delete logic in src/main/java/com/telecom/ocs/provisioning/services/SubscriberService.java
+- [x] T050 [US1] Create SubscriberMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/SubscriberMapper.java
+- [x] T051 [US1] Implement SubscriberController implementing generated SubscribersApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/SubscriberController.java
+- [x] T052 [US1] Add msisdn format validation (@Pattern annotation) and uniqueness constraint handling
+- [x] T053 [US1] Add previousState and lastTransitionDate update logic on state changes
+- [x] T054 [US1] Add logging for subscriber lifecycle operations (creation, state transitions, deletion)
 
 **Checkpoint**: User Story 1 complete and independently testable - MVP ready for deployment
 

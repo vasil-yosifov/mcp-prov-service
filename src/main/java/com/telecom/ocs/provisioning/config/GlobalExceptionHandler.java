@@ -5,10 +5,13 @@ import com.telecom.ocs.provisioning.exceptions.DuplicateResourceException;
 import com.telecom.ocs.provisioning.exceptions.OptimisticLockingException;
 import com.telecom.ocs.provisioning.exceptions.ResourceNotFoundException;
 import com.telecom.ocs.provisioning.exceptions.ValidationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -156,6 +159,62 @@ public class GlobalExceptionHandler {
                 .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * Handles JPA entity validation errors from @Valid on entity fields - returns 400 Bad Request.
+     * This catches validation errors that occur during entity persistence.
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex, WebRequest request) {
+        logger.warn("Constraint violation error: {}", ex.getMessage());
+        
+        Map<String, String> fieldErrors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            String fieldName = violation.getPropertyPath().toString();
+            String errorMessage = violation.getMessage();
+            fieldErrors.put(fieldName, errorMessage);
+        });
+        
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Validation failed for entity")
+                .path(request.getDescription(false).replace("uri=", ""))
+                .details(fieldErrors)
+                .build();
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles transaction exceptions that wrap ConstraintViolationException - returns 400 Bad Request.
+     * This catches validation errors that occur during entity persistence within a transaction.
+     */
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<ErrorResponse> handleTransactionSystemException(
+            TransactionSystemException ex, WebRequest request) {
+        
+        // Check if the root cause is a ConstraintViolationException
+        Throwable rootCause = ex.getRootCause();
+        if (rootCause instanceof ConstraintViolationException) {
+            return handleConstraintViolation((ConstraintViolationException) rootCause, request);
+        }
+        
+        // Otherwise, treat as a general error
+        logger.error("Transaction system error occurred: ", ex);
+        
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .message("An error occurred during transaction processing")
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
