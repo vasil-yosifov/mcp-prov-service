@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -159,6 +160,27 @@ public class GlobalExceptionHandler {
                 .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * Handles method-level validation errors (@Size, @NotNull, etc. on method parameters) - returns 400 Bad Request.
+     * This catches validation errors for handler method parameters like @Size(min=1) List<>.
+     */
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleHandlerMethodValidation(
+            HandlerMethodValidationException ex, WebRequest request) {
+        logger.warn("Method parameter validation error: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Invalid request parameters")
+                .path(request.getDescription(false).replace("uri=", ""))
+                .details(Map.of("validation", "Request parameters failed validation constraints"))
+                .build();
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
