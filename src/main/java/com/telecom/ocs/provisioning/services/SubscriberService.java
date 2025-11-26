@@ -306,12 +306,21 @@ public class SubscriberService {
         
         Subscriber entity = getSubscriberById(subscriberId);
         
+        // Track modifications for account history
+        StringBuilder modifications = new StringBuilder();
+        
         for (com.telecom.ocs.provisioning.api.model.PatchOperation operation : patchOperations) {
             String fieldName = operation.getFieldName();
             // Extract value from JsonNullable
             Object fieldValue = operation.getFieldValue().isPresent() ? operation.getFieldValue().get() : null;
             
             log.debug("Applying patch - field: {}, value: {}", fieldName, fieldValue);
+            
+            // Add to modifications list
+            if (modifications.length() > 0) {
+                modifications.append(", ");
+            }
+            modifications.append(fieldName).append("=").append(fieldValue);
             
             switch (fieldName) {
                 case "msisdn":
@@ -412,9 +421,38 @@ public class SubscriberService {
             }
         }
         
-        // Entity will be automatically saved at end of transaction (dirty checking)
+        // Explicitly save the entity
+        Subscriber updated = subscriberRepository.save(entity);
         log.info("Successfully patched subscriber: {}", subscriberId);
-        return entity;
+        
+        // Record account history entry for subscriber modification. This runs in the same
+        // transaction as the subscriber update so it will only persist if the update succeeds.
+        AccountHistory history = null;
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(subscriberId);
+            history.setEntityType("SUBSCRIBER");
+            history.setCreationDate(now);
+            history.setDescription("Subscriber modification request : " + modifications.toString());
+            history.setDirection("INBOUND");
+            history.setReason("Subscriber Modification");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created with id: {} for modified subscriber: {}", history.getInteractionId(), subscriberId);
+        } catch (Exception e) {
+            // Log but do not mask original success — throwing here would roll back the update.
+            log.error("Failed to record account history for modified subscriber {}: {}. AccountHistory dump: {}", 
+                subscriberId, e.getMessage(), history, e);
+        }
+        
+        return updated;
     }
 
     /**
@@ -433,6 +471,33 @@ public class SubscriberService {
         subscriberRepository.delete(subscriber);
         
         log.info("Subscriber {} deleted successfully", subscriberId);
+
+        // Record account history entry for subscriber deletion. This runs in the same
+        // transaction as the subscriber delete so it will only persist if the delete succeeds.
+        AccountHistory history = null;
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(subscriberId);
+            history.setEntityType("SUBSCRIBER");
+            history.setCreationDate(now);
+            history.setDescription("Subscriber deletion request received from provisioning system");
+            history.setDirection("INBOUND");
+            history.setReason("Subscriber Deletion");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created with id: {} for deleted subscriber: {}", history.getInteractionId(), subscriberId);
+        } catch (Exception e) {
+            // Log but do not mask original success — throwing here would roll back the delete.
+            log.error("Failed to record account history for deleted subscriber {}: {}. AccountHistory dump: {}", 
+                subscriberId, e.getMessage(), history, e);
+        }
     }
 
     /**
