@@ -4,6 +4,9 @@ import com.telecom.ocs.provisioning.exceptions.DuplicateResourceException;
 import com.telecom.ocs.provisioning.exceptions.ResourceNotFoundException;
 import com.telecom.ocs.provisioning.models.Subscriber;
 import com.telecom.ocs.provisioning.repositories.SubscriberRepository;
+import com.telecom.ocs.provisioning.repositories.AccountHistoryRepository;
+import com.telecom.ocs.provisioning.models.AccountHistory;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -33,6 +36,7 @@ import java.util.Optional;
 public class SubscriberService {
 
     private final SubscriberRepository subscriberRepository;
+    private final AccountHistoryRepository accountHistoryRepository;
 
     /**
      * Create a new subscriber
@@ -87,7 +91,34 @@ public class SubscriberService {
 
         Subscriber saved = subscriberRepository.save(subscriber);
         log.info("Created subscriber with ID: {} in state: {}", saved.getSubscriberId(), saved.getState());
-        
+
+        // Record account history entry for subscriber creation. This runs in the same
+        // transaction as the subscriber save so it will only persist if the create succeeds.
+        AccountHistory history = null;
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(saved.getSubscriberId());
+            history.setEntityType("SUBSCRIBER");
+            history.setCreationDate(now);
+            history.setDescription("Subscriber creation request received from provisioning system");
+            history.setDirection("INBOUND");
+            history.setReason("Subscriber Creation");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created with id: {} for subscriber: {}", history.getInteractionId(), saved.getSubscriberId());
+        } catch (Exception e) {
+            // Log but do not mask original success — throwing here would roll back the create.
+            log.error("Failed to record account history for subscriber {}: {}. AccountHistory dump: {}", 
+                saved.getSubscriberId(), e.getMessage(), history, e);
+        }
+
         return saved;
     }
 
