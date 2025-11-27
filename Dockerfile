@@ -29,7 +29,7 @@ EXPOSE 8080
 
 # Health check using the /health-check endpoint
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health-check || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ocs/prov/v1/health-check || exit 1
 
 # JVM options for container environment
 ENV JAVA_OPTS="-XX:+UseContainerSupport \

@@ -121,25 +121,25 @@ Single backend REST microservice structure:
 
 ### Tests for User Story 2
 
-- [ ] T055 [P] [US2] Write integration test for POST /subscribers/{id}/subscriptions (create subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
-- [ ] T056 [P] [US2] Write integration test for GET /subscriptions/{id} (retrieve subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
-- [ ] T057 [P] [US2] Write integration test for GET /subscribers/{id}/subscriptions (list subscriptions) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
-- [ ] T058 [P] [US2] Write integration test for PATCH /subscriptions/{id} (activate/cancel subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
-- [ ] T059 [P] [US2] Write integration test for DELETE /subscriptions/{id} (delete subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
-- [ ] T060 [P] [US2] Write integration test for recurring cycle expiration logic in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
-- [ ] T061 [P] [US2] Write repository test for SubscriptionRepository in src/test/java/com/telecom/ocs/provisioning/repository/SubscriptionRepositoryTest.java
-- [ ] T062 [P] [US2] Write unit test for SubscriptionService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/SubscriptionServiceTest.java
+- [x] T055 [P] [US2] Write integration test for POST /subscribers/{id}/subscriptions (create subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
+- [x] T056 [P] [US2] Write integration test for GET /subscriptions/{id} (retrieve subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
+- [x] T057 [P] [US2] Write integration test for GET /subscribers/{id}/subscriptions (list subscriptions) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
+- [x] T058 [P] [US2] Write integration test for PATCH /subscriptions/{id} (activate/cancel subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
+- [x] T059 [P] [US2] Write integration test for DELETE /subscriptions/{id} (delete subscription) in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
+- [x] T060 [P] [US2] Write integration test for recurring cycle expiration logic in src/test/java/com/telecom/ocs/provisioning/integration/SubscriptionIntegrationTest.java
+- [x] T061 [P] [US2] Write repository test for SubscriptionRepository in src/test/java/com/telecom/ocs/provisioning/repository/SubscriptionRepositoryTest.java
+- [x] T062 [P] [US2] Write unit test for SubscriptionService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/SubscriptionServiceTest.java
 
 ### Implementation for User Story 2
 
-- [ ] T063 [US2] Create Subscription JPA entity with @ManyToOne to Subscriber, lifecycle states in src/main/java/com/telecom/ocs/provisioning/models/Subscription.java
-- [ ] T064 [US2] Create SubscriptionRepository extending JpaRepository with findBySubscriberId query in src/main/java/com/telecom/ocs/provisioning/repositories/SubscriptionRepository.java
-- [ ] T065 [US2] Implement SubscriptionService with recurring cycle logic, auto-expiration in src/main/java/com/telecom/ocs/provisioning/services/SubscriptionService.java
-- [ ] T066 [US2] Create SubscriptionMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/SubscriptionMapper.java
-- [ ] T067 [US2] Implement SubscriptionController implementing generated SubscriptionsApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/SubscriptionController.java
-- [ ] T068 [US2] Add renewalDate calculation logic based on cycleLengthType and cycleLengthUnits
-- [ ] T069 [US2] Add automatic state transition to EXPIRED when recurringCyclesCompleted == maxRecurringCycles
-- [ ] T070 [US2] Add logging for subscription lifecycle operations
+- [x] T063 [US2] Create Subscription JPA entity with @ManyToOne to Subscriber, lifecycle states in src/main/java/com/telecom/ocs/provisioning/models/Subscription.java
+- [x] T064 [US2] Create SubscriptionRepository extending JpaRepository with findBySubscriberId query in src/main/java/com/telecom/ocs/provisioning/repositories/SubscriptionRepository.java
+- [x] T065 [US2] Implement SubscriptionService with recurring cycle logic, auto-expiration in src/main/java/com/telecom/ocs/provisioning/services/SubscriptionService.java
+- [x] T066 [US2] Create SubscriptionMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/SubscriptionMapper.java
+- [x] T067 [US2] Implement SubscriptionController implementing generated SubscriptionsApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/SubscriptionController.java
+- [x] T068 [US2] Add renewalDate calculation logic based on cycleLengthType and cycleLengthUnits (implemented in Subscription entity and SubscriptionService)
+- [x] T069 [US2] Add automatic state transition to EXPIRED when recurringCyclesCompleted == maxRecurringCycles (implemented in Subscription.incrementRecurringCycle())
+- [x] T070 [US2] Add logging for subscription lifecycle operations (implemented with @Slf4j in SubscriptionService and SubscriptionController)
 
 **Checkpoint**: User Stories 1 AND 2 complete and independently testable
 
