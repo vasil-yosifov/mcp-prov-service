@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.36</lombok.version>
         <springdoc.version>2.5.0</springdoc.version>
         <openapi.generator.version>7.5.0</openapi.generator.version>
         <!-- Docker Maven Plugin - fabric8 is ARM64 compatible (replaces Spotify plugin) -->

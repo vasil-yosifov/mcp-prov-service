@@ -1,11 +1,16 @@
 package com.telecom.ocs.provisioning.mappers;
 
 import com.telecom.ocs.provisioning.models.Subscriber;
+import com.telecom.ocs.provisioning.models.Subscription;
+import com.telecom.ocs.provisioning.repositories.SubscriptionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Mapper for converting between Subscriber JPA entity and OpenAPI generated DTOs.
@@ -14,7 +19,10 @@ import java.time.ZoneId;
  * For production use, consider using MapStruct or ModelMapper.
  */
 @Component
+@RequiredArgsConstructor
 public class SubscriberMapper {
+
+    private final SubscriptionRepository subscriptionRepository;
 
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/Vienna");
 
@@ -98,6 +106,15 @@ public class SubscriberMapper {
         
         if (entity.getLastModifiedDate() != null) {
             dto.setLastModifiedDate(toOffsetDateTime(entity.getLastModifiedDate()));
+        }
+
+        // Fetch and set subscription IDs for this subscriber
+        List<Subscription> subscriptions = subscriptionRepository.findBySubscriberId(entity.getSubscriberId());
+        if (subscriptions != null && !subscriptions.isEmpty()) {
+            List<String> subscriptionIds = subscriptions.stream()
+                    .map(Subscription::getSubscriptionId)
+                    .collect(Collectors.toList());
+            dto.setSubscriptions(subscriptionIds);
         }
 
         return dto;
