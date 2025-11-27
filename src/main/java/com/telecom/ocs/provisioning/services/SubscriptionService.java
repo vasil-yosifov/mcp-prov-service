@@ -2,8 +2,10 @@ package com.telecom.ocs.provisioning.services;
 
 import com.telecom.ocs.provisioning.exceptions.DuplicateResourceException;
 import com.telecom.ocs.provisioning.exceptions.ResourceNotFoundException;
+import com.telecom.ocs.provisioning.models.AccountHistory;
 import com.telecom.ocs.provisioning.models.Subscription;
 import com.telecom.ocs.provisioning.models.Subscription.SubscriptionState;
+import com.telecom.ocs.provisioning.repositories.AccountHistoryRepository;
 import com.telecom.ocs.provisioning.repositories.SubscriberRepository;
 import com.telecom.ocs.provisioning.repositories.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service layer for Subscription entity business logic.
@@ -35,6 +38,7 @@ public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriberRepository subscriberRepository;
+    private final AccountHistoryRepository accountHistoryRepository;
 
     // =========================================================================
     // Create Operations
@@ -89,6 +93,29 @@ public class SubscriptionService {
         Subscription saved = subscriptionRepository.save(subscription);
         log.info("Created subscription with ID: {} in state: {} for subscriber: {}", 
                 saved.getSubscriptionId(), saved.getState(), subscriberId);
+
+        // Record account history entry for subscription creation
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            AccountHistory history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(saved.getSubscriptionId());
+            history.setEntityType("SUBSCRIPTION");
+            history.setCreationDate(now);
+            history.setDescription("Subscription creation request received from provisioning system");
+            history.setDirection("INBOUND");
+            history.setReason("Subscription Creation");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created for subscription: {}", saved.getSubscriptionId());
+        } catch (Exception e) {
+            log.error("Failed to record account history for subscription {}: {}", 
+                    saved.getSubscriptionId(), e.getMessage(), e);
+        }
 
         return saved;
     }
@@ -380,40 +407,79 @@ public class SubscriptionService {
 
         Subscription existing = getSubscriptionById(subscriptionId);
 
+        // Track modifications for account history
+        StringBuilder modifications = new StringBuilder();
+
         // Update fields if provided (non-null values)
         if (updates.getOfferName() != null) {
+            modifications.append("offerName=").append(updates.getOfferName()).append(", ");
             existing.setOfferName(updates.getOfferName());
         }
         if (updates.getSubscriptionType() != null) {
+            modifications.append("subscriptionType=").append(updates.getSubscriptionType()).append(", ");
             existing.setSubscriptionType(updates.getSubscriptionType());
         }
         if (updates.getExpirationDate() != null) {
+            modifications.append("expirationDate=").append(updates.getExpirationDate()).append(", ");
             existing.setExpirationDate(updates.getExpirationDate());
         }
         if (updates.getRecurring() != null) {
+            modifications.append("recurring=").append(updates.getRecurring()).append(", ");
             existing.setRecurring(updates.getRecurring());
         }
         if (updates.getMaxRecurringCycles() != null) {
+            modifications.append("maxRecurringCycles=").append(updates.getMaxRecurringCycles()).append(", ");
             existing.setMaxRecurringCycles(updates.getMaxRecurringCycles());
         }
         if (updates.getCycleLengthUnits() != null) {
+            modifications.append("cycleLengthUnits=").append(updates.getCycleLengthUnits()).append(", ");
             existing.setCycleLengthUnits(updates.getCycleLengthUnits());
         }
         if (updates.getCycleLengthType() != null) {
+            modifications.append("cycleLengthType=").append(updates.getCycleLengthType()).append(", ");
             existing.setCycleLengthType(updates.getCycleLengthType());
         }
         if (updates.getPaidFlag() != null) {
+            modifications.append("paidFlag=").append(updates.getPaidFlag()).append(", ");
             existing.setPaidFlag(updates.getPaidFlag());
         }
         if (updates.getIsGroup() != null) {
+            modifications.append("isGroup=").append(updates.getIsGroup()).append(", ");
             existing.setIsGroup(updates.getIsGroup());
         }
         if (updates.getCustomParameters() != null) {
+            modifications.append("customParameters=").append(updates.getCustomParameters()).append(", ");
             existing.setCustomParameters(updates.getCustomParameters());
         }
 
         Subscription saved = subscriptionRepository.save(existing);
         log.info("Subscription {} updated successfully", subscriptionId);
+
+        // Record account history entry for subscription modification
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            String modificationList = modifications.length() > 2 
+                    ? modifications.substring(0, modifications.length() - 2) 
+                    : "no changes";
+            AccountHistory history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(subscriptionId);
+            history.setEntityType("SUBSCRIPTION");
+            history.setCreationDate(now);
+            history.setDescription("Subscription modification request : " + modificationList);
+            history.setDirection("INBOUND");
+            history.setReason("Subscription Update");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created for subscription modification: {}", subscriptionId);
+        } catch (Exception e) {
+            log.error("Failed to record account history for subscription modification {}: {}", 
+                    subscriptionId, e.getMessage(), e);
+        }
 
         return saved;
     }
@@ -438,6 +504,29 @@ public class SubscriptionService {
         subscriptionRepository.delete(subscription);
 
         log.info("Subscription {} deleted successfully", subscriptionId);
+
+        // Record account history entry for subscription deletion
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            AccountHistory history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(subscriptionId);
+            history.setEntityType("SUBSCRIPTION");
+            history.setCreationDate(now);
+            history.setDescription("Subscription deletion request received from provisioning system");
+            history.setDirection("INBOUND");
+            history.setReason("Subscription Deletion");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created for subscription deletion: {}", subscriptionId);
+        } catch (Exception e) {
+            log.error("Failed to record account history for subscription deletion {}: {}", 
+                    subscriptionId, e.getMessage(), e);
+        }
     }
 
     /**
