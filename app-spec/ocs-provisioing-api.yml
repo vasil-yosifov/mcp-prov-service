@@ -792,6 +792,137 @@ paths:
         '204':
           description: Subscription deleted
 
+  /subscriptions/{subscriptionId}/activate:
+    parameters:
+      - name: subscriptionId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Activate a subscription
+      description: |-
+        Transition subscription state from PENDING or SUSPENDED to ACTIVE.
+        Sets activationDate and calculates renewalDate for recurring subscriptions.
+      responses:
+        '200':
+          description: Subscription activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidTransition:
+                  value:
+                    code: 400
+                    message: Invalid state transition from CANCELLED to ACTIVE
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /subscriptions/{subscriptionId}/suspend:
+    parameters:
+      - name: subscriptionId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Suspend a subscription
+      description: |-
+        Transition subscription state from ACTIVE to SUSPENDED.
+      responses:
+        '200':
+          description: Subscription suspended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidTransition:
+                  value:
+                    code: 400
+                    message: Invalid state transition from PENDING to SUSPENDED
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /subscriptions/{subscriptionId}/cancel:
+    parameters:
+      - name: subscriptionId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Cancel a subscription
+      description: |-
+        Transition subscription state from ACTIVE or SUSPENDED to CANCELLED.
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidTransition:
+                  value:
+                    code: 400
+                    message: Invalid state transition from PENDING to CANCELLED
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /subscriptions/{subscriptionId}/renew:
+    parameters:
+      - name: subscriptionId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Renew a subscription (increment recurring cycle)
+      description: |-
+        Increment the recurring cycle count for an active subscription.
+        Auto-transitions to EXPIRED when recurringCyclesCompleted equals maxRecurringCycles.
+        Recalculates renewalDate after cycle increment if not expired.
+      responses:
+        '200':
+          description: Subscription renewed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid operation (subscription not active)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notActive:
+                  value:
+                    code: 400
+                    message: Cannot increment recurring cycle for subscription in state SUSPENDED
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /subscriptions/{subscriptionId}/balances:
     parameters:
       - name: subscriptionId
