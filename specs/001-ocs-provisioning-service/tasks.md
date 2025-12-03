@@ -153,26 +153,26 @@ Single backend REST microservice structure:
 
 ### Tests for User Story 3
 
-- [ ] T071 [P] [US3] Write integration test for POST /subscriptions/{id}/balances (create balance) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
-- [ ] T072 [P] [US3] Write integration test for GET /balances/{id} (retrieve balance) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
-- [ ] T073 [P] [US3] Write integration test for GET /subscriptions/{id}/balances (list balances) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
-- [ ] T074 [P] [US3] Write integration test for balance rollover logic (cap at maxRolloverAmount) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
-- [ ] T075 [P] [US3] Write integration test for balance expiration enforcement in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
-- [ ] T076 [P] [US3] Write integration test for group balance sharing in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
-- [ ] T077 [P] [US3] Write repository test for BalanceRepository in src/test/java/com/telecom/ocs/provisioning/repository/BalanceRepositoryTest.java
-- [ ] T078 [P] [US3] Write unit test for BalanceService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/BalanceServiceTest.java
+- [x] T071 [P] [US3] Write integration test for POST /subscriptions/{id}/balances (create balance) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
+- [x] T072 [P] [US3] Write integration test for GET /balances/{id} (retrieve balance) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
+- [x] T073 [P] [US3] Write integration test for GET /subscriptions/{id}/balances (list balances) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
+- [x] T074 [P] [US3] Write integration test for balance rollover logic (cap at maxRolloverAmount) in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
+- [x] T075 [P] [US3] Write integration test for balance expiration enforcement in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
+- [x] T076 [P] [US3] Write integration test for group balance sharing in src/test/java/com/telecom/ocs/provisioning/integration/BalanceIntegrationTest.java
+- [x] T077 [P] [US3] Write repository test for BalanceRepository in src/test/java/com/telecom/ocs/provisioning/repository/BalanceRepositoryTest.java
+- [x] T078 [P] [US3] Write unit test for BalanceService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/BalanceServiceTest.java
 
 ### Implementation for User Story 3
 
-- [ ] T079 [US3] Create Balance JPA entity with @ManyToOne to Subscription, balanceType/unitType enums in src/main/java/com/telecom/ocs/provisioning/models/Balance.java
-- [ ] T080 [US3] Create BalanceRepository extending JpaRepository with findBySubscriptionId query in src/main/java/com/telecom/ocs/provisioning/repositories/BalanceRepository.java
-- [ ] T081 [US3] Implement BalanceService with rollover logic, expiration checking in src/main/java/com/telecom/ocs/provisioning/services/BalanceService.java
-- [ ] T082 [US3] Create BalanceMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/BalanceMapper.java
-- [ ] T083 [US3] Implement BalanceController implementing generated BalancesApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/BalanceController.java
-- [ ] T084 [US3] Add rollover amount capping logic (rolloverAmount <= maxRolloverAmount)
-- [ ] T085 [US3] Add expiration date validation against current date
-- [ ] T086 [US3] Add group balance sharing logic (isGroupBalance flag handling)
-- [ ] T087 [US3] Add logging for balance operations
+- [x] T079 [US3] Create Balance JPA entity with @ManyToOne to Subscription, balanceType/unitType enums in src/main/java/com/telecom/ocs/provisioning/models/Balance.java
+- [x] T080 [US3] Create BalanceRepository extending JpaRepository with findBySubscriptionId query in src/main/java/com/telecom/ocs/provisioning/repositories/BalanceRepository.java
+- [x] T081 [US3] Implement BalanceService with rollover logic, expiration checking in src/main/java/com/telecom/ocs/provisioning/services/BalanceService.java
+- [x] T082 [US3] Create BalanceMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/BalanceMapper.java
+- [x] T083 [US3] Implement BalanceController implementing generated BalancesApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/BalanceController.java
+- [x] T084 [US3] Add rollover amount capping logic (rolloverAmount <= maxRolloverAmount)
+- [x] T085 [US3] Add expiration date validation against current date
+- [x] T086 [US3] Add group balance sharing logic (isGroupBalance flag handling)
+- [x] T087 [US3] Add logging for balance operations
 
 **Checkpoint**: Core P1 user stories (Subscriber, Subscription, Balance) complete - Core charging system functionality ready
 
