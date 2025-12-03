@@ -1490,8 +1490,6 @@ components:
         maxRolloverAmount: { type: number }
         rolloverAmount: { type: number }
         isRolloverAllowed: { type: boolean }
-      required:
-        - balanceId
 
     Group:
       type: object

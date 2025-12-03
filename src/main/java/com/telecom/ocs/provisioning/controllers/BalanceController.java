@@ -58,11 +58,31 @@ public class BalanceController {
         
         log.info("Creating balance for subscription: {}", subscriptionId);
         
+        // Generate balanceId if not provided
+        if (balance.getBalanceId() == null || balance.getBalanceId().isEmpty()) {
+            balance.setBalanceId(java.util.UUID.randomUUID().toString());
+        }
+        
         // Ensure subscriptionId matches
         balance.setSubscriptionId(subscriptionId);
         
+        // For recurring balances, set default cycle parameters if not provided
+        if (Boolean.TRUE.equals(balance.getIsRecurring())) {
+            if (balance.getCycleLengthType() == null || balance.getCycleLengthType().isEmpty()) {
+                log.info("Setting default cycleLengthType to MONTHS for recurring balance");
+                balance.setCycleLengthType("MONTHS");
+            }
+            if (balance.getCycleLengthUnits() == null) {
+                log.info("Setting default cycleLengthUnits to 1 for recurring balance");
+                balance.setCycleLengthUnits(1);
+            }
+        }
+        
         // Convert DTO to entity
         com.telecom.ocs.provisioning.models.Balance entity = balanceMapper.toEntity(balance);
+        
+        // Set the balanceId on the entity (since mapper doesn't copy it)
+        entity.setBalanceId(balance.getBalanceId());
         
         // Save via service
         com.telecom.ocs.provisioning.models.Balance created = balanceService.createBalance(subscriptionId, entity);
