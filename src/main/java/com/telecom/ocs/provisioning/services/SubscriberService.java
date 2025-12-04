@@ -100,7 +100,7 @@ public class SubscriberService {
             history = new AccountHistory();
             history.setInteractionId(UUID.randomUUID().toString());
             history.setEntityId(saved.getSubscriberId());
-            history.setEntityType("SUBSCRIBER");
+            history.setEntityType(AccountHistory.EntityType.SUBSCRIBER);
             history.setCreationDate(now);
             history.setDescription("Subscriber creation request received from provisioning system");
             history.setDirection("INBOUND");
@@ -433,7 +433,7 @@ public class SubscriberService {
             history = new AccountHistory();
             history.setInteractionId(UUID.randomUUID().toString());
             history.setEntityId(subscriberId);
-            history.setEntityType("SUBSCRIBER");
+            history.setEntityType(AccountHistory.EntityType.SUBSCRIBER);
             history.setCreationDate(now);
             history.setDescription("Subscriber modification request : " + modifications.toString());
             history.setDirection("INBOUND");
@@ -480,7 +480,7 @@ public class SubscriberService {
             history = new AccountHistory();
             history.setInteractionId(UUID.randomUUID().toString());
             history.setEntityId(subscriberId);
-            history.setEntityType("SUBSCRIBER");
+            history.setEntityType(AccountHistory.EntityType.SUBSCRIBER);
             history.setCreationDate(now);
             history.setDescription("Subscriber deletion request received from provisioning system");
             history.setDirection("INBOUND");

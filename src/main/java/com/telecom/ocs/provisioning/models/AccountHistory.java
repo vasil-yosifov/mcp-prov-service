@@ -1,17 +1,38 @@
 package com.telecom.ocs.provisioning.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 /**
  * AccountHistory entity representing entries in the account_history table.
+ * 
+ * Tracks all interactions and events on subscriber accounts, groups, and related entities
+ * for audit trails, compliance, and customer service inquiries.
+ * 
+ * T094: Enhanced with EntityType enum, Lombok annotations, and attachment metadata
  */
 @Entity
 @Table(name = "account_history")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccountHistory {
+
+    /**
+     * Entity type enumeration for account history entries.
+     */
+    public enum EntityType {
+        SUBSCRIBER,
+        GROUP,
+        ACCOUNT
+    }
 
     @Id
     @Column(name = "interaction_id", nullable = false, length = 128)
@@ -20,10 +41,12 @@ public class AccountHistory {
     @Column(name = "entity_id", nullable = false, length = 128)
     private String entityId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "entity_type", nullable = false, length = 64)
-    private String entityType;
+    private EntityType entityType;
 
-    @Column(name = "creation_date")
+    @CreationTimestamp
+    @Column(name = "creation_date", nullable = false, updatable = false)
     private LocalDateTime creationDate;
 
     @Column(name = "description", columnDefinition = "TEXT")
@@ -50,99 +73,13 @@ public class AccountHistory {
     @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
 
-    public String getInteractionId() {
-        return interactionId;
-    }
+    // Attachment metadata
+    @Column(name = "attachment_id", length = 255)
+    private String attachmentId;
 
-    public void setInteractionId(String interactionId) {
-        this.interactionId = interactionId;
-    }
+    @Column(name = "attachment_url", length = 1000)
+    private String attachmentUrl;
 
-    public String getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(String entityId) {
-        this.entityId = entityId;
-    }
-
-    public String getEntityType() {
-        return entityType;
-    }
-
-    public void setEntityType(String entityType) {
-        this.entityType = entityType;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDirection() {
-        return direction;
-    }
-
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getStatusChangeDate() {
-        return statusChangeDate;
-    }
-
-    public void setStatusChangeDate(LocalDateTime statusChangeDate) {
-        this.statusChangeDate = statusChangeDate;
-    }
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
-    }
-
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startDateTime = startDateTime;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
+    @Column(name = "attachment_type", length = 100)
+    private String attachmentType;
 }

@@ -58,6 +58,12 @@ get_balance_count() {
     execute_db_query "SELECT COUNT(*) FROM balances;"
 }
 
+# Get balance count for specific subscription
+get_balance_count_for_subscription() {
+    local subscription_id="$1"
+    execute_db_query "SELECT COUNT(*) FROM balances WHERE subscription_id = '$subscription_id';"
+}
+
 # Get balance by ID from database
 get_balance_from_db() {
     local balance_id="$1"
@@ -132,18 +138,19 @@ cleanup() {
 setup_test_data() {
     log_info "Setting up test data..."
     
-    # Create subscriber
+    # Create subscriber with unique MSISDN
+    local unique_msisdn="436649$(date +%s%N | tail -c 8)"
+    local unique_imsi="21401$(date +%s%N | tail -c 10)"
     local subscriber_payload=$(cat <<EOF
 {
-  "msisdn": "12345678901",
-  "imsi": "123456789012345",
+  "msisdn": "$unique_msisdn",
+  "imsi": "$unique_imsi",
   "personalInfo": {
     "firstName": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com",
     "dateOfBirth": "1990-01-01"
-  },
-  "accountStatus": "ACTIVE"
+  }
 }
 EOF
 )
@@ -164,11 +171,9 @@ EOF
     # Create subscription
     local subscription_payload=$(cat <<EOF
 {
-  "subscriberId": "$CREATED_SUBSCRIBER_ID",
   "offerId": "DATA-PLAN-001",
-  "subscriptionType": "DATA",
-  "activationDate": "2024-01-01T00:00:00Z",
-  "state": "ACTIVE"
+  "offerName": "Data Plan",
+  "subscriptionType": "PREPAID"
 }
 EOF
 )
@@ -358,22 +363,22 @@ EOF
 test_verify_all_balances_in_db() {
     log_info "Test 4: Verify All Balances in Database"
     
-    local total_count=$(get_balance_count)
+    local subscription_balance_count=$(get_balance_count_for_subscription "$CREATED_SUBSCRIPTION_ID")
     local expected_count=${#CREATED_BALANCE_IDS[@]}
     
-    log_db "Total balances in database: $total_count"
+    log_db "Balances for this subscription in database: $subscription_balance_count"
     log_db "Expected balance count: $expected_count"
     
     ((TESTS_RUN++))
-    if [ "$total_count" -eq "$expected_count" ]; then
-        log_success "All $expected_count balances are in database"
+    if [ "$subscription_balance_count" -eq "$expected_count" ]; then
+        log_success "All $expected_count balances are in database for this subscription"
     else
-        log_error "Balance count mismatch (expected: $expected_count, got: $total_count)"
+        log_error "Balance count mismatch (expected: $expected_count, got: $subscription_balance_count)"
     fi
     
-    # Show all balances
-    log_db "All balances in database:"
-    execute_db_query "SELECT balance_id, balance_type, unit_type, balance_amount FROM balances;" | while read -r line; do
+    # Show balances for this subscription
+    log_db "Balances for subscription $CREATED_SUBSCRIPTION_ID:"
+    execute_db_query "SELECT balance_id, balance_type, unit_type, balance_amount FROM balances WHERE subscription_id = '$CREATED_SUBSCRIPTION_ID';" | while read -r line; do
         log_db "  $line"
     done
 }
@@ -382,8 +387,8 @@ test_verify_all_balances_in_db() {
 test_delete_balances_with_db_verification() {
     log_info "Test 5: Delete Balances with DB Verification"
     
-    local count_before=$(get_balance_count)
-    log_db "Balance count before deletion: $count_before"
+    local count_before=$(get_balance_count_for_subscription "$CREATED_SUBSCRIPTION_ID")
+    log_db "Balance count for subscription before deletion: $count_before"
     
     local response=$(curl -s -w "\n%{http_code}" -X DELETE \
         "$BASE_URL/subscriptions/$CREATED_SUBSCRIPTION_ID/balances" \
@@ -400,12 +405,12 @@ test_delete_balances_with_db_verification() {
     
     sleep 1
     
-    local count_after=$(get_balance_count)
-    log_db "Balance count after deletion: $count_after"
+    local count_after=$(get_balance_count_for_subscription "$CREATED_SUBSCRIPTION_ID")
+    log_db "Balance count for subscription after deletion: $count_after"
     
     ((TESTS_RUN++))
     if [ "$count_after" -eq 0 ]; then
-        log_success "All balances deleted from database"
+        log_success "All balances deleted from database for this subscription"
     else
         log_error "Balances not deleted from database (remaining: $count_after)"
     fi

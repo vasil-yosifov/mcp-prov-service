@@ -186,20 +186,20 @@ Single backend REST microservice structure:
 
 ### Tests for User Story 7
 
-- [ ] T088 [P] [US7] Write integration test for POST /account-history (create history entry) in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
-- [ ] T089 [P] [US7] Write integration test for GET /account-history/{id} (retrieve history entry) in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
-- [ ] T090 [P] [US7] Write integration test for GET /account-history?entityId={id} (list history by entity) in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
-- [ ] T091 [P] [US7] Write integration test for chronological ordering of history entries in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
-- [ ] T092 [P] [US7] Write repository test for AccountHistoryRepository in src/test/java/com/telecom/ocs/provisioning/repository/AccountHistoryRepositoryTest.java
-- [ ] T093 [P] [US7] Write unit test for AccountHistoryService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/AccountHistoryServiceTest.java
+- [x] T088 [P] [US7] Write integration test for POST /account-history (create history entry) in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
+- [x] T089 [P] [US7] Write integration test for GET /account-history/{id} (retrieve history entry) in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
+- [x] T090 [P] [US7] Write integration test for GET /account-history?entityId={id} (list history by entity) in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
+- [x] T091 [P] [US7] Write integration test for chronological ordering of history entries in src/test/java/com/telecom/ocs/provisioning/integration/AccountHistoryIntegrationTest.java
+- [x] T092 [P] [US7] Write repository test for AccountHistoryRepository in src/test/java/com/telecom/ocs/provisioning/repository/AccountHistoryRepositoryTest.java
+- [x] T093 [P] [US7] Write unit test for AccountHistoryService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/AccountHistoryServiceTest.java
 
 ### Implementation for User Story 7
 
-- [ ] T094 [US7] Create AccountHistory JPA entity with entityType enum, attachment metadata in src/main/java/com/telecom/ocs/provisioning/models/AccountHistory.java
-- [ ] T095 [US7] Create AccountHistoryRepository extending JpaRepository with findByEntityIdOrderByStartDateTimeDesc query in src/main/java/com/telecom/ocs/provisioning/repositories/AccountHistoryRepository.java
-- [ ] T096 [US7] Implement AccountHistoryService with audit logging logic in src/main/java/com/telecom/ocs/provisioning/services/AccountHistoryService.java
-- [ ] T097 [US7] Create AccountHistoryMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/AccountHistoryMapper.java
-- [ ] T098 [US7] Implement AccountHistoryController implementing generated AccountHistoryApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/AccountHistoryController.java
+- [x] T094 [US7] Create AccountHistory JPA entity with entityType enum, attachment metadata in src/main/java/com/telecom/ocs/provisioning/models/AccountHistory.java
+- [x] T095 [US7] Create AccountHistoryRepository extending JpaRepository with findByEntityIdOrderByStartDateTimeDesc query in src/main/java/com/telecom/ocs/provisioning/repositories/AccountHistoryRepository.java
+- [x] T096 [US7] Implement AccountHistoryService with audit logging logic in src/main/java/com/telecom/ocs/provisioning/services/AccountHistoryService.java
+- [x] T097 [US7] Create AccountHistoryMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/AccountHistoryMapper.java
+- [x] T098 [US7] Implement AccountHistoryController implementing generated AccountHistoryApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/AccountHistoryController.java
 - [ ] T099 [US7] Add automatic history entry creation on subscriber/subscription state transitions
 - [ ] T100 [US7] Add pagination support for history list queries (limit/offset)
 - [ ] T101 [US7] Add logging for audit history operations
