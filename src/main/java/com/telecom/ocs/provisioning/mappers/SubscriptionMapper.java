@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.telecom.ocs.provisioning.models.Subscription;
+import com.telecom.ocs.provisioning.repositories.BalanceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,9 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Mapper for converting between Subscription JPA entity and OpenAPI generated DTOs.
@@ -32,6 +35,7 @@ public class SubscriptionMapper {
 
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/Vienna");
     private final ObjectMapper objectMapper;
+    private final BalanceRepository balanceRepository;
 
     /**
      * Convert Subscription entity to OpenAPI DTO
@@ -77,6 +81,13 @@ public class SubscriptionMapper {
 
         // Custom parameters (JSON String to Map)
         dto.setCustomParameters(parseCustomParameters(entity.getCustomParameters()));
+
+        // Fetch and set balance IDs for this subscription
+        List<String> balanceIds = balanceRepository.findBySubscriptionId(entity.getSubscriptionId())
+                .stream()
+                .map(com.telecom.ocs.provisioning.models.Balance::getBalanceId)
+                .collect(Collectors.toList());
+        dto.setBalances(balanceIds);
 
         return dto;
     }
