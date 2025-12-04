@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @DataJpaTest
 @ActiveProfiles("test")
+@org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE)
+@org.springframework.context.annotation.Import(org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class)
 public class AccountHistoryRepositoryTest {
 
     @Autowired

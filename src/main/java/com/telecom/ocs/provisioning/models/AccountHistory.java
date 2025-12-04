@@ -30,6 +30,7 @@ public class AccountHistory {
      */
     public enum EntityType {
         SUBSCRIBER,
+        SUBSCRIPTION,
         GROUP,
         ACCOUNT
     }

@@ -200,7 +200,7 @@ Single backend REST microservice structure:
 - [x] T096 [US7] Implement AccountHistoryService with audit logging logic in src/main/java/com/telecom/ocs/provisioning/services/AccountHistoryService.java
 - [x] T097 [US7] Create AccountHistoryMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/AccountHistoryMapper.java
 - [x] T098 [US7] Implement AccountHistoryController implementing generated AccountHistoryApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/AccountHistoryController.java
-- [ ] T099 [US7] Add automatic history entry creation on subscriber/subscription state transitions
+- [x] T099 [US7] Add automatic history entry creation on subscriber/subscription state transitions
 - [ ] T100 [US7] Add pagination support for history list queries (limit/offset)
 - [ ] T101 [US7] Add logging for audit history operations
 

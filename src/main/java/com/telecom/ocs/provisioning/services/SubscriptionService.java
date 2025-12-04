@@ -226,6 +226,15 @@ public class SubscriptionService {
         Subscription saved = subscriptionRepository.save(subscription);
         log.info("Subscription {} activated: {} → ACTIVE", subscriptionId, oldState);
 
+        // T099: Automatically create account history entry for state transitions
+        createHistoryEntryForStateTransition(
+            subscriptionId,
+            AccountHistory.EntityType.SUBSCRIPTION,
+            oldState.toString(),
+            "ACTIVE",
+            "State transition from " + oldState + " to ACTIVE"
+        );
+
         return saved;
     }
 
@@ -256,6 +265,15 @@ public class SubscriptionService {
         Subscription saved = subscriptionRepository.save(subscription);
         log.info("Subscription {} suspended: {} → SUSPENDED", subscriptionId, oldState);
 
+        // T099: Automatically create account history entry for state transitions
+        createHistoryEntryForStateTransition(
+            subscriptionId,
+            AccountHistory.EntityType.SUBSCRIPTION,
+            oldState.toString(),
+            "SUSPENDED",
+            "State transition from " + oldState + " to SUSPENDED"
+        );
+
         return saved;
     }
 
@@ -285,6 +303,15 @@ public class SubscriptionService {
 
         Subscription saved = subscriptionRepository.save(subscription);
         log.info("Subscription {} cancelled: {} → CANCELLED", subscriptionId, oldState);
+
+        // T099: Automatically create account history entry for state transitions
+        createHistoryEntryForStateTransition(
+            subscriptionId,
+            AccountHistory.EntityType.SUBSCRIPTION,
+            oldState.toString(),
+            "CANCELLED",
+            "State transition from " + oldState + " to CANCELLED"
+        );
 
         return saved;
     }
@@ -541,5 +568,53 @@ public class SubscriptionService {
         subscriptionRepository.deleteBySubscriberId(subscriberId);
 
         log.info("All subscriptions deleted for subscriber: {}", subscriberId);
+    }
+
+    // =========================================================================
+    // T099: Account History Integration for State Transitions
+    // =========================================================================
+
+    /**
+     * Creates an account history entry for state transitions
+     * T099: Automatic history entry creation on subscription state transitions
+     * 
+     * @param entityId the ID of the entity (subscription ID)
+     * @param entityType the type of entity (SUBSCRIPTION)
+     * @param fromState the state transitioning from
+     * @param toState the state transitioning to
+     * @param description description of the state transition
+     */
+    private void createHistoryEntryForStateTransition(
+            String entityId,
+            AccountHistory.EntityType entityType,
+            String fromState,
+            String toState,
+            String description) {
+        
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            AccountHistory history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(entityId);
+            history.setEntityType(entityType);
+            history.setCreationDate(now);
+            history.setDescription(description);
+            history.setDirection("INBOUND");
+            history.setReason("State Transition");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+            
+            accountHistoryRepository.save(history);
+            
+            log.debug("Created account history entry for state transition: {} -> {} on {} {}", 
+                    fromState, toState, entityType, entityId);
+        } catch (Exception e) {
+            // Log the error but don't fail the state transition
+            log.error("Failed to create account history entry for state transition on {} {}: {}", 
+                    entityType, entityId, e.getMessage(), e);
+        }
     }
 }

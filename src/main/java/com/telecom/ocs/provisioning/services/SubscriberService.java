@@ -198,6 +198,15 @@ public class SubscriberService {
         Subscriber updated = subscriberRepository.save(subscriber);
         log.info("Subscriber {} state transitioned from {} to {}", subscriberId, oldState, newState);
         
+        // T099: Automatically create account history entry for state transitions
+        createHistoryEntryForStateTransition(
+            subscriberId,
+            AccountHistory.EntityType.SUBSCRIBER,
+            oldState.toString(),
+            newState.toString(),
+            "State transition from " + oldState + " to " + newState
+        );
+        
         return updated;
     }
 
@@ -497,6 +506,48 @@ public class SubscriberService {
             // Log but do not mask original success — throwing here would roll back the delete.
             log.error("Failed to record account history for deleted subscriber {}: {}. AccountHistory dump: {}", 
                 subscriberId, e.getMessage(), history, e);
+        }
+    }
+
+    /**
+     * T099: Create account history entry for state transitions
+     * 
+     * @param entityId the subscriber or subscription ID
+     * @param entityType the type of entity (SUBSCRIBER or SUBSCRIPTION)
+     * @param fromState the previous state
+     * @param toState the new state
+     * @param description description of the state transition
+     */
+    private void createHistoryEntryForStateTransition(
+            String entityId,
+            AccountHistory.EntityType entityType,
+            String fromState,
+            String toState,
+            String description) {
+        
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            AccountHistory history = new AccountHistory();
+            history.setInteractionId(UUID.randomUUID().toString());
+            history.setEntityId(entityId);
+            history.setEntityType(entityType);
+            history.setCreationDate(now);
+            history.setDescription(description);
+            history.setDirection("INBOUND");
+            history.setReason("State Transition");
+            history.setStatus("SUCCESS");
+            history.setStatusChangeDate(now);
+            history.setChannel("API");
+            history.setStartDateTime(now);
+            history.setEndDateTime(now);
+
+            accountHistoryRepository.save(history);
+            log.debug("AccountHistory entry created for {} {} state transition: {} → {}", 
+                    entityType, entityId, fromState, toState);
+        } catch (Exception e) {
+            // Log but do not fail the state transition if history creation fails
+            log.error("Failed to record account history for {} {} state transition {}: {}", 
+                    entityType, entityId, fromState + " → " + toState, e.getMessage(), e);
         }
     }
 
