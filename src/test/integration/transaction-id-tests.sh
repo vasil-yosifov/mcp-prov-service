@@ -391,7 +391,7 @@ fi
 # Test 6.2: PATCH request
 echo -e "\nTest 6.2: PATCH request preserves transaction ID"
 CUSTOM_TXN="PATCH-$(generate_uuid)"
-PATCH_PAYLOAD='{"fieldName": "email", "newValue": "test@example.com"}'
+PATCH_PAYLOAD='[{"fieldName": "email", "newValue": "test@example.com"}]'
 RESPONSE=$(curl -s -D - -H "X-Transaction-ID: $CUSTOM_TXN" -H "$CONTENT_TYPE" -X PATCH "$BASE_URL/subscribers/$SUBSCRIBER_ID" -d "$PATCH_PAYLOAD" 2>&1)
 RESPONSE_TXN_ID=$(echo "$RESPONSE" | grep -i "^X-Transaction-ID:" | sed 's/^X-Transaction-ID: //i' | tr -d '\r')
 
