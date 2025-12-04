@@ -101,7 +101,7 @@ public class AccountHistoryController {
     }
 
     /**
-     * Get account history entry by interaction ID.
+     * Retrieve a specific account history entry by its interaction ID.
      * 
      * GET /accountHistory/{interactionId}
      * 
@@ -131,34 +131,31 @@ public class AccountHistoryController {
     /**
      * List all account history entries for a given entity ID.
      * Returns entries in reverse chronological order (newest first).
+     * T100: Pagination support with limit/offset parameters
      * 
-     * GET /accountHistory/{entityId}
-     * 
-     * Note: The OpenAPI spec uses the same path for both get by interactionId and list by entityId.
-     * This implementation assumes the path parameter can be interpreted as entityId for listing.
+     * GET /accountHistory/entityId/{entityId}?limit=X&offset=Y
      * 
      * @param entityId The entity ID to filter by
-     * @param limit Optional limit parameter (not yet implemented)
-     * @param offset Optional offset parameter (not yet implemented)
-     * @return 200 OK with list of account history entries
+     * @param limit Optional limit parameter (1-100, default 20)
+     * @param offset Optional offset parameter (default 0)
+     * @return 200 OK with paginated list of account history entries
      */
-    @GetMapping("/accountHistory/entity/{entityId}")
-    public ResponseEntity<List<AccountHistory>> listAccountHistoryByEntityId(
-            @PathVariable String entityId,
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset) {
+    @GetMapping("/accountHistory/entityId/{entityId}")
+    public ResponseEntity<List<AccountHistory>> accountHistoryEntityIdEntityIdGet(
+            @PathVariable("entityId") String entityId,
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "offset", required = false) Integer offset) {
         
-        log.info("Listing account history for entity: {}", entityId);
+        log.info("Listing account history for entity: {} (limit={}, offset={})", entityId, limit, offset);
         
-        List<com.telecom.ocs.provisioning.models.AccountHistory> entities = 
-                accountHistoryService.listAccountHistoryByEntityId(entityId);
+        // Always use pagination - service will apply defaults (limit=20, offset=0)
+        List<com.telecom.ocs.provisioning.models.AccountHistory> entities =
+                accountHistoryService.listAccountHistoryByEntityId(entityId, limit, offset);
         
         // Convert to DTOs
         List<AccountHistory> response = entities.stream()
                 .map(accountHistoryMapper::toDto)
                 .collect(Collectors.toList());
-        
-        // TODO T100: Apply pagination with limit/offset
         
         log.info("Retrieved {} account history entries for entity: {}", response.size(), entityId);
         return ResponseEntity.ok(response);

@@ -1,0 +1,41 @@
+==========================================
+Account History Pagination Tests (T100)
+==========================================
+Base URL: http://localhost:8080
+API Path: /ocs/prov/v1
+
+[1;33mSetting up test data...[0m
+Created test subscriber: 72470a54-1af4-461a-b289-d84e2c00087c
+Creating 25 account history entries...
+.........................
+Created 25 account history entries
+
+[1;33mTest Suite: Default Pagination[0m
+[0;32m✓[0m PASS: Default pagination - HTTP 200
+[0;31m✗[0m FAIL: Default pagination - Returns 20 entries (default limit)
+  Expected: 20
+  Actual:   26
+
+[1;33mTest Suite: Limit Parameter[0m
+[0;32m✓[0m PASS: Limit=5 - HTTP 200
+[0;32m✓[0m PASS: Limit=5 - Returns 5 entries
+[0;32m✓[0m PASS: Limit=10 - HTTP 200
+[0;32m✓[0m PASS: Limit=10 - Returns 10 entries
+[0;32m✓[0m PASS: Limit=1 (min) - HTTP 200
+[0;32m✓[0m PASS: Limit=1 (min) - Returns 1 entry
+[0;32m✓[0m PASS: Limit=100 (max) - HTTP 200
+[0;32m✓[0m PASS: Limit=100 (max) - Returns 26 entries
+[0;32m✓[0m PASS: Limit=0 (below min) - HTTP 200
+[0;32m✓[0m PASS: Limit=0 (below min) - Returns 1 entry (constrained)
+[0;32m✓[0m PASS: Limit=150 (above max) - HTTP 200
+[0;32m✓[0m PASS: Limit=150 (above max) - Returns 26 entries (constrained to available)
+[0;32m✓[0m PASS: Limit=-5 (negative) - HTTP 200
+[0;32m✓[0m PASS: Limit=-5 (negative) - Returns 1 entry (constrained)
+
+[1;33mTest Suite: Offset Parameter[0m
+[0;32m✓[0m PASS: Offset=0 - HTTP 200
+[0;32m✓[0m PASS: Offset=0 - Returns 5 entries
+[0;32m✓[0m PASS: Offset=5 - HTTP 200
+[0;32m✓[0m PASS: Offset=5 - Returns 5 entries
+[0;32m✓[0m PASS: Offset=20 - HTTP 200
+[0;32m✓[0m PASS: Offset=20 - Returns 6 entries (remaining)

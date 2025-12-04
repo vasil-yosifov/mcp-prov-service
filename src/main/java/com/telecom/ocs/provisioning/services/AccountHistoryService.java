@@ -44,6 +44,7 @@ public class AccountHistoryService {
     /**
      * Create a new account history entry.
      * T096: Audit logging logic
+     * T101: Enhanced audit logging for compliance
      * 
      * @param accountHistory the account history entry to create
      * @return the created account history entry
@@ -75,8 +76,11 @@ public class AccountHistoryService {
         }
 
         AccountHistory saved = accountHistoryRepository.save(accountHistory);
-        log.info("Created account history entry with interactionId: {} for entity: {}", 
-                saved.getInteractionId(), saved.getEntityId());
+        
+        // T101: Enhanced audit logging with key details
+        log.info("AUDIT: Account history entry created - interactionId={}, entityId={}, entityType={}, description={}, status={}", 
+                saved.getInteractionId(), saved.getEntityId(), saved.getEntityType(), 
+                saved.getDescription(), saved.getStatus());
 
         return saved;
     }
@@ -110,6 +114,7 @@ public class AccountHistoryService {
      * Returns entries in reverse chronological order (newest first).
      * T095: Uses custom query for chronological ordering
      * T096: Audit logging logic
+     * T100: Pagination support with limit/offset
      * 
      * @param entityId the entity ID to filter by
      * @return list of account history entries in reverse chronological order
@@ -124,6 +129,39 @@ public class AccountHistoryService {
         return entries;
     }
 
+    /**
+     * List account history entries for a given entity ID with pagination.
+     * Returns entries in reverse chronological order (newest first).
+     * T100: Pagination support with limit/offset
+     * 
+     * @param entityId the entity ID to filter by
+     * @param limit maximum number of entries to return (1-100, default 20)
+     * @param offset number of entries to skip (default 0)
+     * @return paginated list of account history entries in reverse chronological order
+     */
+    @Transactional(readOnly = true)
+    public List<AccountHistory> listAccountHistoryByEntityId(String entityId, Integer limit, Integer offset) {
+        log.debug("Retrieving paginated account history for entity: {} (limit={}, offset={})", 
+                entityId, limit, offset);
+        
+        // Apply defaults and constraints
+        int pageLimit = (limit != null) ? Math.min(Math.max(limit, 1), 100) : 20;
+        int pageOffset = (offset != null) ? Math.max(offset, 0) : 0;
+        
+        // Get all entries (sorted)
+        List<AccountHistory> allEntries = accountHistoryRepository.findByEntityIdOrderByStartDateTimeDesc(entityId);
+        
+        // Apply manual pagination
+        int fromIndex = Math.min(pageOffset, allEntries.size());
+        int toIndex = Math.min(pageOffset + pageLimit, allEntries.size());
+        List<AccountHistory> paginatedEntries = allEntries.subList(fromIndex, toIndex);
+        
+        log.debug("Found {} account history entries for entity: {} (returned {} of {} total)", 
+                paginatedEntries.size(), entityId, paginatedEntries.size(), allEntries.size());
+        
+        return paginatedEntries;
+    }
+
     // =========================================================================
     // Update Operations
     // =========================================================================
@@ -132,6 +170,7 @@ public class AccountHistoryService {
      * Update an existing account history entry.
      * Protects immutable fields: interactionId, entityId, entityType, creationDate.
      * T096: Audit logging logic with immutable field protection
+     * T101: Enhanced audit logging for compliance
      * 
      * @param interactionId the interaction ID of the entry to update
      * @param updates the updates to apply
@@ -148,23 +187,36 @@ public class AccountHistoryService {
                             "Account history entry not found with interactionId: " + interactionId);
                 });
 
+        // Track changes for audit log
+        StringBuilder changes = new StringBuilder();
+        
         // Update only mutable fields
         if (updates.getDescription() != null) {
+            changes.append("description: '").append(existing.getDescription())
+                   .append("' -> '").append(updates.getDescription()).append("', ");
             existing.setDescription(updates.getDescription());
         }
         if (updates.getDirection() != null) {
+            changes.append("direction: '").append(existing.getDirection())
+                   .append("' -> '").append(updates.getDirection()).append("', ");
             existing.setDirection(updates.getDirection());
         }
         if (updates.getReason() != null) {
+            changes.append("reason: '").append(existing.getReason())
+                   .append("' -> '").append(updates.getReason()).append("', ");
             existing.setReason(updates.getReason());
         }
         if (updates.getStatus() != null) {
+            changes.append("status: '").append(existing.getStatus())
+                   .append("' -> '").append(updates.getStatus()).append("', ");
             existing.setStatus(updates.getStatus());
         }
         if (updates.getStatusChangeDate() != null) {
             existing.setStatusChangeDate(updates.getStatusChangeDate());
         }
         if (updates.getChannel() != null) {
+            changes.append("channel: '").append(existing.getChannel())
+                   .append("' -> '").append(updates.getChannel()).append("', ");
             existing.setChannel(updates.getChannel());
         }
         if (updates.getStartDateTime() != null) {
@@ -177,7 +229,15 @@ public class AccountHistoryService {
         // Note: interactionId, entityId, entityType, creationDate are immutable
 
         AccountHistory saved = accountHistoryRepository.save(existing);
-        log.info("Updated account history entry: {}", interactionId);
+        
+        // T101: Enhanced audit logging with change details
+        if (changes.length() > 0) {
+            log.info("AUDIT: Account history entry updated - interactionId={}, entityId={}, changes=[{}]",
+                    interactionId, saved.getEntityId(), changes.toString());
+        } else {
+            log.info("AUDIT: Account history entry updated - interactionId={}, entityId={}, no field changes",
+                    interactionId, saved.getEntityId());
+        }
 
         return saved;
     }
@@ -189,6 +249,7 @@ public class AccountHistoryService {
     /**
      * Delete an account history entry by interaction ID.
      * T096: Audit logging logic
+     * T101: Enhanced audit logging for compliance
      * 
      * @param interactionId the interaction ID to delete
      * @throws IllegalArgumentException if entry not found
@@ -196,14 +257,19 @@ public class AccountHistoryService {
     public void deleteAccountHistory(String interactionId) {
         log.info("Deleting account history entry: {}", interactionId);
 
-        if (!accountHistoryRepository.existsById(interactionId)) {
-            log.error("Account history entry not found for deletion: {}", interactionId);
-            throw new IllegalArgumentException(
-                    "Account history entry not found with interactionId: " + interactionId);
-        }
+        // Retrieve entry before deletion for audit logging
+        AccountHistory entry = accountHistoryRepository.findById(interactionId)
+                .orElseThrow(() -> {
+                    log.error("Account history entry not found for deletion: {}", interactionId);
+                    return new IllegalArgumentException(
+                            "Account history entry not found with interactionId: " + interactionId);
+                });
 
         accountHistoryRepository.deleteById(interactionId);
-        log.info("Deleted account history entry: {}", interactionId);
+        
+        // T101: Enhanced audit logging with deleted entry details
+        log.info("AUDIT: Account history entry deleted - interactionId={}, entityId={}, entityType={}, description={}",
+                interactionId, entry.getEntityId(), entry.getEntityType(), entry.getDescription());
     }
 
     // =========================================================================

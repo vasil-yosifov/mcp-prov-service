@@ -1201,7 +1201,7 @@ paths:
                 duplicateAccountHistory:
                   $ref: '#/components/examples/ConflictDuplicateAccountHistory'
 
-  /accountHistory/{entityId}:
+  /accountHistory/entityId/{entityId}:
     parameters:
       - name: entityId
         in: path
