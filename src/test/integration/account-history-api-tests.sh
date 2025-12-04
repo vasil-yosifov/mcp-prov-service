@@ -126,7 +126,7 @@ fi
 # ==============================================
 print_section "Test 3: List Account History by EntityId"
 
-RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/accountHistory/entity/$ENTITY_ID")
+RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/accountHistory/entityId/$ENTITY_ID")
 
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
@@ -237,7 +237,7 @@ curl -s -X POST "$BASE_URL/accountHistory" \
   -d "$PAYLOAD_2" > /dev/null
 
 # Verify chronological ordering (newest first)
-RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/accountHistory/entity/$ENTITY_ID_2")
+RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/accountHistory/entityId/$ENTITY_ID_2")
 
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
