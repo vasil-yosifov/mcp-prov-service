@@ -1,7 +1,0 @@
-==========================================
-Account History Pagination Tests (T100)
-==========================================
-Base URL: http://localhost:8080
-API Path: /ocs/prov/v1
-
-[1;33mSetting up test data...[0m
