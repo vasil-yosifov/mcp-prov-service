@@ -1,0 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ocs_provisioning_test}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:ocsuser}
+    password: ${DB_PASSWORD:ocspass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  test:
+    database:
+      replace: none
+
+logging:
+  level:
+    root: WARN
+    org.springframework.test: INFO
+    com.telecom.ocs.provisioning: DEBUG

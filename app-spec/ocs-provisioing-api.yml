@@ -1,15 +1,21 @@
-openapi: '3.0.3'
+openapi: 3.0.3
 info:
   title: OCS provisioning
   version: '1.1'
-  description: |-
-    Breaking change in v1.1: removed top-level collection GET endpoints that returned full lists
-    (e.g. GET /subscriptions, GET /balances, GET /groups, GET /notificationAddresses, GET /timers,
-    GET /accountHistory). Use the ID-scoped endpoints or collection-specific nested list endpoints
+  description: 'Breaking change in v1.1: removed top-level collection GET endpoints
+    that returned full lists
+
+    (e.g. GET /subscriptions, GET /balances, GET /groups, GET /notificationAddresses,
+    GET /timers,
+
+    GET /accountHistory). Use the ID-scoped endpoints or collection-specific nested
+    list endpoints
+
     (for example GET /subscribers/{subscriberId}/subscriptions or GET /accountHistory/{entityId}).
-    This change improves API performance and encourages paginated, scoped queries.
+
+    This change improves API performance and encourages paginated, scoped queries.'
 servers:
-  - url: https://provisioning.telco.com/ocs/prov/v1
+- url: https://provisioning.telco.com/ocs/prov/v1
 paths:
   /health-check:
     get:
@@ -19,35 +25,37 @@ paths:
           description: OK
         '500':
           description: Service Internal Error
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/lookup:
     get:
       summary: Lookup subscriberId by msisdn, imsi or first and last name
       parameters:
-        - name: msisdn
-          in: query
-          description: MSISDN number to lookup
-          required: false
-          schema:
-            type: string
-        - name: imsi
-          in: query
-          description: IMSI to lookup
-          required: false
-          schema:
-            type: string
-        - name: firstName
-          in: query
-          description: Subscriber first name to lookup (requires lastName)
-          required: false
-          schema:
-            type: string
-        - name: lastName
-          in: query
-          description: Subscriber last name to lookup (requires firstName)
-          required: false
-          schema:
-            type: string
+      - name: msisdn
+        in: query
+        description: MSISDN number to lookup
+        required: false
+        schema:
+          type: string
+      - name: imsi
+        in: query
+        description: IMSI to lookup
+        required: false
+        schema:
+          type: string
+      - name: firstName
+        in: query
+        description: Subscriber first name to lookup (requires lastName)
+        required: false
+        schema:
+          type: string
+      - name: lastName
+        in: query
+        description: Subscriber last name to lookup (requires firstName)
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/transactionId'
       responses:
         '200':
           description: SubscriberId found
@@ -63,7 +71,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-  
   /subscribers/:
     post:
       summary: Create a subscriber
@@ -91,15 +98,17 @@ paths:
                   value:
                     code: 409
                     message: Subscriber already exists
-                    details: { field: msisdn }
-
+                    details:
+                      field: msisdn
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}:
     parameters:
-      - name: subscriberId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get subscriber by ID
       responses:
@@ -111,6 +120,8 @@ paths:
                 $ref: '#/components/schemas/Subscriber'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update subscriber partially
       requestBody:
@@ -135,19 +146,22 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete subscriber
       responses:
         '204':
           description: Subscriber deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}/subscriptions:
     parameters:
-      - name: subscriberId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: List subscriptions for a subscriber
       responses:
@@ -159,6 +173,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Subscription'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a subscription for subscriber
       requestBody:
@@ -185,16 +201,17 @@ paths:
               examples:
                 duplicateSubscription:
                   $ref: '#/components/examples/ConflictDuplicateSubscription'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}/timers:
     parameters:
-      - name: subscriberId
-        in: path
-        required: true
-        schema:
-          type: string
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/offset'
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
+    - $ref: '#/components/parameters/limit'
+    - $ref: '#/components/parameters/offset'
     get:
       summary: List timers for a subscriber
       responses:
@@ -211,6 +228,8 @@ paths:
                   $ref: '#/components/examples/TimerArrayExample'
         '400':
           $ref: '#/components/responses/BadRequest'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a timer for subscriber
       requestBody:
@@ -234,14 +253,15 @@ paths:
                   $ref: '#/components/examples/TimerExample'
         '409':
           $ref: '#/components/responses/Conflict'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}/notificationAddresses:
     parameters:
-      - name: subscriberId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: List notification addresses for a subscriber
       responses:
@@ -258,10 +278,12 @@ paths:
                   $ref: '#/components/examples/NotificationAddressArrayExample'
         '400':
           $ref: '#/components/responses/BadRequest'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a notification address for subscriber
-      description: |-
-        Create a notification address for the subscriber. The `notificationAddress` (e.g., msisdn or email) must be unique per subscriber.
+      description: Create a notification address for the subscriber. The `notificationAddress`
+        (e.g., msisdn or email) must be unique per subscriber.
       requestBody:
         required: true
         content:
@@ -285,19 +307,20 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '409':
           $ref: '#/components/responses/Conflict'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}/notificationAddresses/{notificationAddressId}:
     parameters:
-      - name: subscriberId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: notificationAddressId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: notificationAddressId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get notification address by ID for a subscriber
       responses:
@@ -309,10 +332,12 @@ paths:
                 $ref: '#/components/schemas/NotificationAddress'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update notification address partially for a subscriber
-      description: |-
-        Partially update a notification address. Fields that would violate uniqueness constraints will result in 409.
+      description: Partially update a notification address. Fields that would violate
+        uniqueness constraints will result in 409.
       requestBody:
         required: true
         content:
@@ -340,6 +365,8 @@ paths:
           $ref: '#/components/responses/Conflict'
         '422':
           $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete notification address for a subscriber
       responses:
@@ -347,19 +374,20 @@ paths:
           description: Notification address deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}/timers/{timerId}:
     parameters:
-      - name: subscriberId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: timerId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: timerId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get timer by ID for a subscriber
       responses:
@@ -371,6 +399,8 @@ paths:
                 $ref: '#/components/schemas/Timer'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update timer partially for a subscriber
       requestBody:
@@ -398,16 +428,17 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/FieldNotFound'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscriptions/{subscriptionId}/timers:
     parameters:
-      - name: subscriptionId
-        in: path
-        required: true
-        schema:
-          type: string
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/offset'
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    - $ref: '#/components/parameters/limit'
+    - $ref: '#/components/parameters/offset'
     get:
       summary: List timers for a subscription
       responses:
@@ -424,6 +455,8 @@ paths:
                   $ref: '#/components/examples/TimerArrayExample'
         '400':
           $ref: '#/components/responses/BadRequest'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a timer for subscription
       requestBody:
@@ -447,19 +480,20 @@ paths:
                   $ref: '#/components/examples/TimerExample'
         '409':
           $ref: '#/components/responses/Conflict'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscriptions/{subscriptionId}/timers/{timerId}:
     parameters:
-      - name: subscriptionId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: timerId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: timerId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get timer by ID for a subscription
       responses:
@@ -471,6 +505,8 @@ paths:
                 $ref: '#/components/schemas/Timer'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update timer partially for a subscription
       requestBody:
@@ -497,22 +533,25 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '422':
-          $ref: '#/components/responses/FieldNotFound'          
+          $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete timer for a subscription
       responses:
         '204':
           description: Timer deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups/{groupId}/timers:
     parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/offset'
+    - name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+    - $ref: '#/components/parameters/limit'
+    - $ref: '#/components/parameters/offset'
     get:
       summary: List timers for a group
       responses:
@@ -529,6 +568,8 @@ paths:
                   $ref: '#/components/examples/TimerArrayExample'
         '400':
           $ref: '#/components/responses/BadRequest'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a timer for group
       requestBody:
@@ -552,14 +593,15 @@ paths:
                   $ref: '#/components/examples/TimerExample'
         '409':
           $ref: '#/components/responses/Conflict'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups/{groupId}/notificationAddresses:
     parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: List notification addresses for a group
       responses:
@@ -576,10 +618,12 @@ paths:
                   $ref: '#/components/examples/NotificationAddressArrayExample'
         '400':
           $ref: '#/components/responses/BadRequest'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a notification address for group
-      description: |-
-        Create a notification address for the group. The `notificationAddress` must be unique within the group.
+      description: Create a notification address for the group. The `notificationAddress`
+        must be unique within the group.
       requestBody:
         required: true
         content:
@@ -603,19 +647,20 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '409':
           $ref: '#/components/responses/Conflict'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups/{groupId}/notificationAddresses/{notificationAddressId}:
     parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: notificationAddressId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: notificationAddressId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get notification address by ID for a group
       responses:
@@ -627,7 +672,8 @@ paths:
                 $ref: '#/components/schemas/NotificationAddress'
         '404':
           $ref: '#/components/responses/NotFound'
-  
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update notification address partially for a group
       requestBody:
@@ -654,6 +700,8 @@ paths:
           $ref: '#/components/responses/Conflict'
         '422':
           $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete notification address for a group
       responses:
@@ -661,19 +709,20 @@ paths:
           description: Notification address deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups/{groupId}/timers/{timerId}:
     parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: timerId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: timerId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get timer by ID for a group
       responses:
@@ -685,6 +734,8 @@ paths:
                 $ref: '#/components/schemas/Timer'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update timer partially for a group
       requestBody:
@@ -711,13 +762,16 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '422':
-          $ref: '#/components/responses/FieldNotFound'          
+          $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete timer for a group
       responses:
         '204':
           description: Timer deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscriptions:
     post:
       summary: Create subscription
@@ -743,14 +797,15 @@ paths:
               examples:
                 duplicateSubscription:
                   $ref: '#/components/examples/ConflictDuplicateSubscription'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscriptions/{subscriptionId}:
     parameters:
-      - name: subscriptionId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get subscription by ID
       responses:
@@ -762,6 +817,8 @@ paths:
                 $ref: '#/components/schemas/Subscription'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update subscription partially
       requestBody:
@@ -786,19 +843,157 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete subscription
       responses:
         '204':
           description: Subscription deleted
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
+  /subscriptions/{subscriptionId}/activate:
+    parameters:
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      summary: Activate a subscription
+      description: 'Transition subscription state from PENDING or SUSPENDED to ACTIVE.
 
+        Sets activationDate and calculates renewalDate for recurring subscriptions.'
+      responses:
+        '200':
+          description: Subscription activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidTransition:
+                  value:
+                    code: 400
+                    message: Invalid state transition from CANCELLED to ACTIVE
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
+  /subscriptions/{subscriptionId}/suspend:
+    parameters:
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      summary: Suspend a subscription
+      description: Transition subscription state from ACTIVE to SUSPENDED.
+      responses:
+        '200':
+          description: Subscription suspended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidTransition:
+                  value:
+                    code: 400
+                    message: Invalid state transition from PENDING to SUSPENDED
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
+  /subscriptions/{subscriptionId}/cancel:
+    parameters:
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      summary: Cancel a subscription
+      description: Transition subscription state from ACTIVE or SUSPENDED to CANCELLED.
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidTransition:
+                  value:
+                    code: 400
+                    message: Invalid state transition from PENDING to CANCELLED
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
+  /subscriptions/{subscriptionId}/renew:
+    parameters:
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      summary: Renew a subscription (increment recurring cycle)
+      description: 'Increment the recurring cycle count for an active subscription.
+
+        Auto-transitions to EXPIRED when recurringCyclesCompleted equals maxRecurringCycles.
+
+        Recalculates renewalDate after cycle increment if not expired.'
+      responses:
+        '200':
+          description: Subscription renewed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Invalid operation (subscription not active)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notActive:
+                  value:
+                    code: 400
+                    message: Cannot increment recurring cycle for subscription in
+                      state SUSPENDED
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscriptions/{subscriptionId}/balances:
     parameters:
-      - name: subscriptionId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: List balances for a subscription
       responses:
@@ -810,6 +1005,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Balance'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Create a balance for subscription
       requestBody:
@@ -834,12 +1031,15 @@ paths:
               examples:
                 duplicateBalance:
                   $ref: '#/components/examples/ConflictDuplicateBalance'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete balance
       responses:
         '204':
           description: Balance deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups:
     post:
       summary: Create group
@@ -867,15 +1067,17 @@ paths:
                   value:
                     code: 409
                     message: Group already exists
-                    details: { field: groupName }
-
+                    details:
+                      field: groupName
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups/{groupId}:
     parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get group by ID
       responses:
@@ -887,19 +1089,22 @@ paths:
                 $ref: '#/components/schemas/Group'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete group
       responses:
         '204':
           description: Group deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /groups/{groupId}/members:
     parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: List member subscriber IDs for a group
       responses:
@@ -911,6 +1116,8 @@ paths:
                 type: array
                 items:
                   type: string
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     post:
       summary: Add member to group
       requestBody:
@@ -927,7 +1134,8 @@ paths:
           description: Member added
         '400':
           $ref: '#/components/responses/BadRequest'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /notificationAddresses:
     post:
       summary: Create notification address
@@ -953,14 +1161,15 @@ paths:
               examples:
                 duplicateNotificationAddress:
                   $ref: '#/components/examples/ConflictDuplicateNotificationAddress'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /notificationAddresses/{notificationAddressId}:
     parameters:
-      - name: notificationAddressId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: notificationAddressId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get notification address by ID
       responses:
@@ -974,12 +1183,15 @@ paths:
           $ref: '#/components/responses/NotFound'
         '400':
           $ref: '#/components/responses/BadRequest'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete notification address
       responses:
         '204':
           description: Notification address deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /timers:
     post:
       summary: Create timer
@@ -1011,14 +1223,15 @@ paths:
               examples:
                 duplicateTimer:
                   $ref: '#/components/examples/ConflictDuplicateTimer'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /timers/{timerId}:
     parameters:
-      - name: timerId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: timerId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get timer by ID
       responses:
@@ -1030,12 +1243,15 @@ paths:
                 $ref: '#/components/schemas/Timer'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete timer
       responses:
         '204':
           description: Timer deleted
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /accountHistory:
     post:
       summary: Create an account history interaction
@@ -1069,17 +1285,19 @@ paths:
               examples:
                 duplicateAccountHistory:
                   $ref: '#/components/examples/ConflictDuplicateAccountHistory'
-
-  /accountHistory/{entityId}:
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
+  /accountHistory/entityId/{entityId}:
     parameters:
-      - name: entityId
-        in: path
-        description: Related entity ID (subscriberId, subscriptionId, etc.) to list history for
-        required: true
-        schema:
-          type: string
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/offset'
+    - name: entityId
+      in: path
+      description: Related entity ID (subscriberId, subscriptionId, etc.) to list
+        history for
+      required: true
+      schema:
+        type: string
+    - $ref: '#/components/parameters/limit'
+    - $ref: '#/components/parameters/offset'
     get:
       summary: List account history interactions for a specific entity
       responses:
@@ -1098,14 +1316,15 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /accountHistory/{interactionId}:
     parameters:
-      - name: interactionId
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: interactionId
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get account history entry by interactionId
       responses:
@@ -1120,6 +1339,8 @@ paths:
                   $ref: '#/components/examples/AccountHistoryExample'
         '404':
           $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     patch:
       summary: Update account history entry partially
       requestBody:
@@ -1147,6 +1368,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/FieldNotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
     delete:
       summary: Delete account history entry
       responses:
@@ -1154,7 +1377,8 @@ paths:
           description: Account history entry deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
 components:
   parameters:
     limit:
@@ -1176,7 +1400,13 @@ components:
         type: integer
         format: int32
         minimum: 0
-
+    transactionId:
+      name: X-Transaction-ID
+      in: header
+      description: Unique transaction ID
+      required: false
+      schema:
+        type: string
   schemas:
     Subscriber:
       type: object
@@ -1187,20 +1417,31 @@ components:
           type: string
         msisdn:
           type: string
-          description: MSISDN in international format, digits only, prefixed with country code (e.g. 43664123456789)
-          pattern: '^[0-9]{14,15}$'
+          description: MSISDN in international format, digits only, prefixed with
+            country code (e.g. 43664123456789)
+          pattern: ^[0-9]{11,15}$
         imsi:
           type: string
           description: IMSI in international format, digits only (e.g. 123456789012345)
-          pattern: '^[0-9]{12,15}$'
+          pattern: ^[0-9]{12,15}$
         iccId:
           type: string
         currentState:
           type: string
-          enum: [pre-provisioned, active, suspended, deactivated, terminated]
+          enum:
+          - pre-provisioned
+          - active
+          - suspended
+          - deactivated
+          - terminated
         previousState:
           type: string
-          enum: [pre-provisioned, active, suspended, deactivated, terminated]
+          enum:
+          - pre-provisioned
+          - active
+          - suspended
+          - deactivated
+          - terminated
         creationDate:
           type: string
           format: date-time
@@ -1222,24 +1463,37 @@ components:
         personalInfo:
           type: object
           properties:
-            firstName: { type: string }
-            lastName: { type: string }
-            dateOfBirth: { type: string, format: date }
-            email: { type: string }
-            contactNumber: { type: string }
+            firstName:
+              type: string
+            lastName:
+              type: string
+            dateOfBirth:
+              type: string
+              format: date
+            email:
+              type: string
+            contactNumber:
+              type: string
         billing:
           type: object
           properties:
-            billingCycle: { type: string }
-            billcycleDay: { type: integer }
+            billingCycle:
+              type: string
+            billcycleDay:
+              type: integer
             billingAddress:
               type: object
               properties:
-                street: { type: string }
-                city: { type: string }
-                state: { type: string }
-                zipCode: { type: string }
-                country: { type: string }
+                street:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                zipCode:
+                  type: string
+                country:
+                  type: string
         groups:
           type: array
           items:
@@ -1255,11 +1509,16 @@ components:
         services:
           type: object
           properties:
-            voice: { type: boolean }
-            sms: { type: boolean }
-            mms: { type: boolean }
-            data: { type: boolean }
-            roaming: { type: boolean }
+            voice:
+              type: boolean
+            sms:
+              type: boolean
+            mms:
+              type: boolean
+            data:
+              type: boolean
+            roaming:
+              type: boolean
             valueAddedServices:
               type: array
               items:
@@ -1276,19 +1535,28 @@ components:
           items:
             type: string
       required:
-        - subscriberId
-
+      - subscriberId
     Subscription:
       type: object
       properties:
-        subscriberId: { type: string }
-        subscriptionId: { type: string }
-        subscriptionType: { type: string }
-        offerId: { type: string }
-        offerName: { type: string }
-        state:  
-          type: string 
-          enum: [pending, active, suspended, cancelled, expired]
+        subscriberId:
+          type: string
+        subscriptionId:
+          type: string
+        subscriptionType:
+          type: string
+        offerId:
+          type: string
+        offerName:
+          type: string
+        state:
+          type: string
+          enum:
+          - pending
+          - active
+          - suspended
+          - cancelled
+          - expired
         creationDate:
           type: string
           format: date-time
@@ -1301,13 +1569,20 @@ components:
         renewalDate:
           type: string
           format: date-time
-        recurring: { type: boolean }
-        paidFlag: { type: boolean }
-        isGroup: { type: boolean }
-        maxRecurringCycles: { type: integer }
-        recurringCyclesCompleted: { type: integer }
-        cycleLengthUnits: { type: integer }
-        cycleLengthType: { type: string }
+        recurring:
+          type: boolean
+        paidFlag:
+          type: boolean
+        isGroup:
+          type: boolean
+        maxRecurringCycles:
+          type: integer
+        recurringCyclesCompleted:
+          type: integer
+        cycleLengthUnits:
+          type: integer
+        cycleLengthType:
+          type: string
         customParameters:
           type: object
           additionalProperties:
@@ -1324,13 +1599,14 @@ components:
           items:
             type: string
       required:
-        - subscriptionId
-
+      - subscriptionId
     Balance:
       type: object
       properties:
-        subscriptionId: { type: string }
-        balanceId: { type: string }
+        subscriptionId:
+          type: string
+        balanceId:
+          type: string
         effectiveDate:
           type: string
           format: date-time
@@ -1343,34 +1619,53 @@ components:
         lastModifiedDate:
           type: string
           format: date-time
-        balanceType: { type: string }
-        unitType: 
-          type: string 
-          enum: [BYTES, EVENTS, SECONDS, MICROCENTS,MICROUNITS]
-
-        balanceAmount: { type: number }
-        balanceAvailable: { type: number }
-        isGroupBalance: { type: boolean }
-        isRecurring: { type: boolean }
-        cycleLengthType: { type: string }
-        cycleLengthUnits: { type: integer }
-        maxRecurringCycles: { type: integer }
-        recurringCyclesCompleted: { type: integer }
-        maxRolloverAmount: { type: number }
-        rolloverAmount: { type: number }
-        isRolloverAllowed: { type: boolean }
-      required:
-        - balanceId
-
+        balanceType:
+          type: string
+        unitType:
+          type: string
+          enum:
+          - BYTES
+          - EVENTS
+          - SECONDS
+          - MICROCENTS
+          - MICROUNITS
+        balanceAmount:
+          type: number
+        balanceAvailable:
+          type: number
+        isGroupBalance:
+          type: boolean
+        isRecurring:
+          type: boolean
+        cycleLengthType:
+          type: string
+        cycleLengthUnits:
+          type: integer
+        maxRecurringCycles:
+          type: integer
+        recurringCyclesCompleted:
+          type: integer
+        maxRolloverAmount:
+          type: number
+        rolloverAmount:
+          type: number
+        isRolloverAllowed:
+          type: boolean
     Group:
       type: object
       properties:
-        groupId: { type: string }
-        groupName: { type: string }
-        groupType: { type: string }
-        state: 
+        groupId:
           type: string
-          enum: [active, suspended, terminated]
+        groupName:
+          type: string
+        groupType:
+          type: string
+        state:
+          type: string
+          enum:
+          - active
+          - suspended
+          - terminated
         createdDate:
           type: string
           format: date-time
@@ -1383,10 +1678,13 @@ components:
         groupOwner:
           type: object
           properties:
-            subscriberId: { type: string }
-            role: 
+            subscriberId:
               type: string
-              enum: [ADMIN, MEMBER]
+            role:
+              type: string
+              enum:
+              - ADMIN
+              - MEMBER
             memberSince:
               type: string
               format: date-time
@@ -1405,9 +1703,12 @@ components:
         settings:
           type: object
           properties:
-            maxMembers: { type: integer }
-            autoRenew: { type: boolean }
-            quotaDistribution: { type: string }
+            maxMembers:
+              type: integer
+            autoRenew:
+              type: boolean
+            quotaDistribution:
+              type: string
         customFields:
           type: object
           additionalProperties:
@@ -1420,23 +1721,26 @@ components:
           items:
             type: string
       required:
-        - groupId
-
+      - groupId
     NotificationAddress:
       type: object
       properties:
-        notificationAddressId: { type: string }
-        notificationType: 
+        notificationAddressId:
           type: string
-          enum: [SMS, EMAIL]
+        notificationType:
+          type: string
+          enum:
+          - SMS
+          - EMAIL
         notificationAddress:
           type: string
-          description: Destination address (msisdn or email). For MSISDN use digits-only international format.
+          description: Destination address (msisdn or email). For MSISDN use digits-only
+            international format.
           anyOf:
-            - type: string
-              pattern: '^[0-9]{6,15}$'
-            - type: string
-              format: email
+          - type: string
+            pattern: ^[0-9]{6,15}$
+          - type: string
+            format: email
         lastNotificationDate:
           type: string
           format: date-time
@@ -1450,15 +1754,18 @@ components:
           type: string
           format: date-time
       required:
-        - notificationAddressId
-
+      - notificationAddressId
     Timer:
       type: object
       properties:
-        timerId: { type: string }
-        timerEntityId: { type: string }
-        timerName: { type: string }
-        timerExecutionRelativePeriod: { type: integer }
+        timerId:
+          type: string
+        timerEntityId:
+          type: string
+        timerName:
+          type: string
+        timerExecutionRelativePeriod:
+          type: integer
         timerExecutionDate:
           type: string
           format: date-time
@@ -1472,8 +1779,7 @@ components:
           type: string
           format: date-time
       required:
-        - timerId
-
+      - timerId
     AccountHistory:
       type: object
       properties:
@@ -1483,7 +1789,10 @@ components:
           type: string
         entityType:
           type: string
-          enum: [SUBSCRIBER, GROUP, ACCOUNT]
+          enum:
+          - SUBSCRIBER
+          - GROUP
+          - ACCOUNT
         creationDate:
           type: string
           format: date-time
@@ -1501,9 +1810,12 @@ components:
         attachment:
           type: object
           properties:
-            id: { type: string }
-            url: { type: string }
-            type: { type: string }
+            id:
+              type: string
+            url:
+              type: string
+            type:
+              type: string
         channel:
           type: string
         interactionDate:
@@ -1516,11 +1828,10 @@ components:
               type: string
               format: date-time
       required:
-        - interactionId
-        - entityId
-        - entityType
-        - creationDate
-
+      - interactionId
+      - entityId
+      - entityType
+      - creationDate
     Error:
       type: object
       properties:
@@ -1532,37 +1843,35 @@ components:
           type: object
           additionalProperties: true
       required:
-        - code
-        - message
+      - code
+      - message
     SubscriberIdResponse:
       type: object
       properties:
         subscriberId:
           type: string
       required:
-        - subscriberId
+      - subscriberId
+    PatchOperation:
+      type: object
+      description: A single patch operation containing fieldName and fieldValue
+      properties:
+        fieldName:
+          type: string
+          description: JSON field name (dot notation supported for nested fields)
+            to update
+        fieldValue:
+          description: New value for the field. Type is determined by the field being
+            updated (string, number, boolean, object, or array).
+      required:
+      - fieldName
+      - fieldValue
     PatchField:
       type: array
       description: Array of patch objects. Each item must include fieldName and fieldValue.
+      minItems: 1
       items:
-        type: object
-        properties:
-          fieldName:
-            type: string
-            description: JSON field name (dot notation supported for nested fields) to update
-          fieldValue:
-            description: New value for the field. Type is determined by the field being updated.
-            oneOf:
-              - type: string
-              - type: number
-              - type: boolean
-              - type: object
-              - type: array
-        required:
-          - fieldName
-          - fieldValue
-        minItems: 1
-
+        $ref: '#/components/schemas/PatchOperation'
   examples:
     TimerExample:
       summary: A sample timer
@@ -1571,28 +1880,28 @@ components:
         timerEntityId: SUB123456789
         timerName: OneHourTimer
         timerExecutionRelativePeriod: 3600
-        timerExecutionDate: "2024-01-20T11:00:00Z"
-        createdDate: "2024-01-20T10:00:00Z"
-        modifiedDate: "2024-01-20T10:00:00Z"
-        expirationDate: "2037-01-20T10:00:00Z"
+        timerExecutionDate: '2024-01-20T11:00:00Z'
+        createdDate: '2024-01-20T10:00:00Z'
+        modifiedDate: '2024-01-20T10:00:00Z'
+        expirationDate: '2037-01-20T10:00:00Z'
     TimerArrayExample:
       summary: Array of timers
       value:
-        - $ref: '#/components/examples/TimerExample/value'
+      - $ref: '#/components/examples/TimerExample/value'
     NotificationAddressExample:
       summary: A sample notification address
       value:
         notificationAddressId: NOTIF123456-SMS-001
         notificationType: SMS
         notificationAddress: 43660223456789
-        lastNotificationDate: "2024-01-15T12:00:00Z"
-        createdDate: "2024-01-20T10:00:00Z"
-        modifiedDate: "2024-01-20T10:00:00Z"
-        expirationDate: "2037-01-20T10:00:00Z"
+        lastNotificationDate: '2024-01-15T12:00:00Z'
+        createdDate: '2024-01-20T10:00:00Z'
+        modifiedDate: '2024-01-20T10:00:00Z'
+        expirationDate: '2037-01-20T10:00:00Z'
     NotificationAddressArrayExample:
       summary: Array of notification addresses
       value:
-        - $ref: '#/components/examples/NotificationAddressExample/value'
+      - $ref: '#/components/examples/NotificationAddressExample/value'
     BadRequestSubscriber:
       summary: Validation error creating subscriber
       value:
@@ -1645,26 +1954,26 @@ components:
       summary: A sample account history interaction
       value:
         interactionId: INT-2023-001
-        entityId: "27123456789"
+        entityId: '27123456789'
         entityType: SUBSCRIBER
-        creationDate: "2023-11-14T10:30:00Z"
-        description: "Customer inquiry about data bundle"
+        creationDate: '2023-11-14T10:30:00Z'
+        description: Customer inquiry about data bundle
         direction: inbound
-        reason: "Bundle Information Request"
+        reason: Bundle Information Request
         status: completed
-        statusChangeDate: "2023-11-14T10:45:00Z"
+        statusChangeDate: '2023-11-14T10:45:00Z'
         attachment:
           id: ATT-001
           url: https://example.com/attachments/chat-transcript-001
           type: chat-transcript
         channel: CRM
         interactionDate:
-          startDateTime: "2023-11-14T10:30:00Z"
-          endDateTime: "2023-11-14T10:45:00Z"
+          startDateTime: '2023-11-14T10:30:00Z'
+          endDateTime: '2023-11-14T10:45:00Z'
     AccountHistoryArrayExample:
       summary: Array of account history entries
       value:
-        - $ref: '#/components/examples/AccountHistoryExample/value'
+      - $ref: '#/components/examples/AccountHistoryExample/value'
     ConflictDuplicateAccountHistory:
       summary: Conflict example for duplicate account history entry
       value:
@@ -1712,9 +2021,8 @@ components:
     PatchFieldExample:
       summary: Example patch payload
       value:
-        - fieldName: personalInfo.email
-          fieldValue: user@example.com
-
+      - fieldName: personalInfo.email
+        fieldValue: user@example.com
   responses:
     BadRequest:
       description: Bad request
