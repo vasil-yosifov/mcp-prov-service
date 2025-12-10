@@ -4,6 +4,8 @@ import com.telecom.ocs.provisioning.api.model.PatchOperation;
 import com.telecom.ocs.provisioning.mappers.SubscriptionMapper;
 import com.telecom.ocs.provisioning.models.Subscription;
 import com.telecom.ocs.provisioning.services.SubscriptionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,7 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
     private final SubscriptionMapper subscriptionMapper;
+    private final ObjectMapper objectMapper;
 
     // =========================================================================
     // Subscriber-scoped Subscription Endpoints
@@ -409,7 +412,14 @@ public class SubscriptionController {
                 case "cycleLengthUnits" -> subscription.setCycleLengthUnits(convertToInteger(fieldValue));
                 case "cycleLengthType" -> subscription.setCycleLengthType(
                         Subscription.CycleLengthType.valueOf(fieldValue.toString().toUpperCase()));
-                case "customParameters" -> subscription.setCustomParameters(fieldValue.toString());
+                case "customParameters" -> {
+                    try {
+                        subscription.setCustomParameters(objectMapper.writeValueAsString(fieldValue));
+                    } catch (JsonProcessingException e) {
+                        log.error("Error serializing customParameters", e);
+                        throw new IllegalArgumentException("Invalid format for customParameters");
+                    }
+                }
                 default -> {
                     log.warn("Unsupported patch field: {}", fieldName);
                     throw new IllegalArgumentException("Unsupported patch field: " + fieldName);
