@@ -163,7 +163,7 @@ public class SubscriberMapper {
             }
         }
 
-        // State mapping
+        // State mapping - set default if not provided
         if (dto.getCurrentState() != null) {
             entity.setState(mapCurrentStateToEntity(dto.getCurrentState()));
         }

@@ -57,6 +57,7 @@ public class SubscriberController {
         log.info("Received request to create subscriber with msisdn: {}", 
                 subscriberDto.getMsisdn() != null ? subscriberDto.getMsisdn() : "null");
         
+        log.info("Received request to create subscriber : {}", subscriberDto);
         // Convert DTO to entity
         Subscriber entity = subscriberMapper.toEntity(subscriberDto);
         
