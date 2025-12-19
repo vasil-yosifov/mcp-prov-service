@@ -97,6 +97,44 @@ public class SubscriberController {
     }
 
     /**
+     * PUT /subscribers/{subscriberId}/state : Update subscriber state
+     * 
+     * Dedicated endpoint for managing subscriber state transitions.
+     * Tracks previousState and lastTransitionDate automatically (FR-004).
+     * Creates account history entry for state changes (T099).
+     *
+     * @param subscriberId Subscriber UUID
+     * @param newState The new subscriber state
+     * @return Updated subscriber (status code 200)
+     *         or Bad request (status code 400) if invalid state
+     *         or Resource not found (status code 404)
+     */
+    @PutMapping(value = "/{subscriberId}/state", produces = "application/json")
+    public ResponseEntity<com.telecom.ocs.provisioning.api.model.Subscriber> subscribersSubscriberIdStatePut(
+            @PathVariable("subscriberId") String subscriberId,
+            @Valid @RequestParam("state") String newState) {
+        
+        log.info("Received request to update subscriber {} state to: {}", subscriberId, newState);
+        
+        try {
+            // Parse and validate state
+            Subscriber.SubscriberState state = Subscriber.SubscriberState.valueOf(newState.toUpperCase());
+            
+            // Update state using dedicated service method
+            Subscriber updated = subscriberService.updateSubscriberState(subscriberId, state);
+            
+            // Convert to DTO
+            com.telecom.ocs.provisioning.api.model.Subscriber responseDto = subscriberMapper.toDto(updated);
+            
+            log.info("Successfully updated subscriber {} state to: {}", subscriberId, newState);
+            return ResponseEntity.ok(responseDto);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid state value: {}", newState, e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
      * GET /subscribers/lookup : Lookup subscriberId by msisdn, imsi or first and last name
      * 
      * Supports three lookup strategies:
