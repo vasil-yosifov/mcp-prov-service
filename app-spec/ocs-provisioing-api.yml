@@ -1847,6 +1847,7 @@ components:
           type: string
           enum:
           - SUBSCRIBER
+          - SUBSCRIPTION
           - GROUP
           - ACCOUNT
         creationDate:

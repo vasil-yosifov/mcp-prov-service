@@ -99,10 +99,10 @@ public class SubscriptionService {
             LocalDateTime now = LocalDateTime.now();
             AccountHistory history = new AccountHistory();
             history.setInteractionId(UUID.randomUUID().toString());
-            history.setEntityId(saved.getSubscriptionId());
+            history.setEntityId(subscriberId);
             history.setEntityType(AccountHistory.EntityType.SUBSCRIBER);
             history.setCreationDate(now);
-            history.setDescription("Subscription creation request received from provisioning system");
+            history.setDescription("Subscription creation request received from provisioning system. SubscriptionId: " + saved.getSubscriptionId());
             history.setDirection("INBOUND");
             history.setReason("Subscription Creation");
             history.setStatus("SUCCESS");
@@ -490,10 +490,10 @@ public class SubscriptionService {
                     : "no changes";
             AccountHistory history = new AccountHistory();
             history.setInteractionId(UUID.randomUUID().toString());
-            history.setEntityId(subscriptionId);
+            history.setEntityId(existing.getSubscriberId());
             history.setEntityType(AccountHistory.EntityType.SUBSCRIBER);
             history.setCreationDate(now);
-            history.setDescription("Subscription modification request : " + modificationList);
+            history.setDescription("Subscription modification request for subscriptionId: " + subscriptionId + ". Changes: " + modificationList);
             history.setDirection("INBOUND");
             history.setReason("Subscription Update");
             history.setStatus("SUCCESS");
@@ -537,10 +537,10 @@ public class SubscriptionService {
             LocalDateTime now = LocalDateTime.now();
             AccountHistory history = new AccountHistory();
             history.setInteractionId(UUID.randomUUID().toString());
-            history.setEntityId(subscriptionId);
+            history.setEntityId(subscription.getSubscriberId());
             history.setEntityType(AccountHistory.EntityType.SUBSCRIBER);
             history.setCreationDate(now);
-            history.setDescription("Subscription deletion request received from provisioning system");
+            history.setDescription("Subscription deletion request received from provisioning system. SubscriptionId: " + subscriptionId);
             history.setDirection("INBOUND");
             history.setReason("Subscription Deletion");
             history.setStatus("SUCCESS");
