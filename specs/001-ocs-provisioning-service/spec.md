@@ -150,13 +150,14 @@ Operators and charging systems need to record and retrieve service consumption r
 
 **Acceptance Scenarios**:
 
-1. **Given** active subscriber with valid balance, **When** charging system creates voice usage record with durationSeconds=300, **Then** system creates usage record with usageType=VOICE, records balanceValueBefore and balanceValueAfter
-2. **Given** active subscriber with data balance, **When** charging system creates data usage record with volumeUsage=104857600 (100MB), **Then** system creates usage record with usageType=DATA and impactedBalanceId reference
-3. **Given** subscriber with SMS balance, **When** charging system creates SMS usage record with volumeUsage=1, **Then** system creates usage record with usageType=SMS and recordType=EVENT
-4. **Given** duplicate usageId already exists, **When** charging system attempts to create usage record with same usageId, **Then** system rejects with 409 Conflict error
-5. **Given** invalid chargedPartyId (non-existent subscriber), **When** charging system attempts to create usage record, **Then** system rejects with 404 Not Found error
-6. **Given** subscriber with multiple usage records, **When** operator retrieves usage for subscriberId, **Then** system returns chronologically ordered list of all usage records
-7. **Given** subscriber with 1000+ usage records, **When** operator retrieves usage with limit=50 and offset=100, **Then** system returns paginated results with 50 records starting from offset 100
+1. **Given** active subscriber with valid ALLOWANCE balance (balanceAvailable=1000), **When** charging system creates voice usage record with volumeUsage=300, **Then** system creates usage record with usageType=VOICE, deducts volumeUsage from balance (balanceAvailable becomes 700), records balanceValueBefore=1000 and balanceValueAfter=700
+2. **Given** active subscriber with ALLOWANCE data balance (balanceAvailable=104857600), **When** charging system creates data usage record with volumeUsage=104857600 (100MB), **Then** system creates usage record with usageType=DATA, deducts volumeUsage from balance (balanceAvailable becomes 0), records impactedBalanceId reference
+3. **Given** subscriber with ALLOWANCE SMS balance (balanceAvailable=5), **When** charging system creates SMS usage record with volumeUsage=10, **Then** system creates usage record with usageType=SMS and recordType=EVENT, sets balanceAvailable to 0 (not negative)
+4. **Given** subscriber with COUNTER balance (balanceAvailable=500), **When** charging system creates usage record with volumeUsage=100, **Then** system creates usage record and adds volumeUsage to balance (balanceAvailable becomes 600)
+5. **Given** duplicate usageId already exists, **When** charging system attempts to create usage record with same usageId, **Then** system rejects with 409 Conflict error
+6. **Given** invalid chargedPartyId (non-existent subscriber), **When** charging system attempts to create usage record, **Then** system rejects with 404 Not Found error
+7. **Given** subscriber with multiple usage records, **When** operator retrieves usage for subscriberId, **Then** system returns chronologically ordered list of all usage records
+8. **Given** subscriber with 1000+ usage records, **When** operator retrieves usage with limit=50 and offset=100, **Then** system returns paginated results with 50 records starting from offset 100
 
 ---
 
@@ -171,6 +172,7 @@ Operators and charging systems need to record and retrieve service consumption r
 - What happens when PATCH operation specifies invalid fieldName? **System returns 422 Unprocessable Entity with FieldNotFound error**
 - What happens when pagination offset exceeds total record count? **System returns empty array with proper pagination metadata**
 - What happens when concurrent updates modify the same entity? **System uses optimistic locking based on lastModifiedDate field: on update, system checks if lastModifiedDate matches the value from when client retrieved entity; if changed, returns 409 Conflict error requiring client to retry with fresh data**
+- What happens when usage volumeUsage exceeds balanceAvailable for ALLOWANCE balance? **System deducts as much as available, setting balanceAvailable to 0. The usage record is created successfully with balanceValueAfter=0, allowing partial consumption tracking**
 
 ## Requirements *(mandatory)*
 
@@ -275,6 +277,9 @@ Operators and charging systems need to record and retrieve service consumption r
 - **FR-093**: System MUST store usageTimestamp for when the usage record was created
 - **FR-094**: System MUST support optional offerId to associate usage with specific offer
 - **FR-095**: System MUST provide endpoint to list usage records for a specific subscriber with pagination (limit/offset)
+- **FR-096**: System MUST deduct volumeUsage from balanceAvailable when creating usage record for a balance with balanceType=ALLOWANCE
+- **FR-097**: System MUST set balanceAvailable to 0 (not negative) when volumeUsage exceeds balanceAvailable for ALLOWANCE balance type
+- **FR-098**: System MUST add volumeUsage to balanceAvailable when creating usage record for a balance with balanceType=COUNTER
 
 #### API Standards (P1)
 

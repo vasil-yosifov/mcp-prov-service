@@ -307,28 +307,31 @@ Single backend REST microservice structure:
 
 ## Phase 9.5: User Story 8 - Usage Recording (Priority: P1)
 
-**Goal**: Enable operators and charging systems to record service consumption (voice calls, data sessions, SMS, MMS) for subscribers, tracking the impact on balances for billing and quota enforcement.
+**Goal**: Enable operators and charging systems to record service consumption (voice calls, data sessions, SMS, MMS) for subscribers, tracking the impact on balances for billing and quota enforcement. Usage recording automatically updates balance values based on balance type (ALLOWANCE deducts, COUNTER adds).
 
-**Independent Test**: Create usage records for subscribers with different usage types (VOICE, DATA, SMS, MMS), verify balance impact tracking (balanceValueBefore/After), validate required fields, handle duplicate usageId conflict.
+**Independent Test**: Create usage records for subscribers with different usage types (VOICE, DATA, SMS, MMS), verify balance impact tracking (balanceValueBefore/After), validate required fields, handle duplicate usageId conflict. Verify ALLOWANCE balance deduction (capped at 0) and COUNTER balance addition.
 
 ### Tests for User Story 8
 
 - [ ] T170 [P] [US8] Write integration test for POST /usage (create usage record) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T171 [P] [US8] Write integration test for voice usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T172 [P] [US8] Write integration test for data usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T171 [P] [US8] Write integration test for voice usage recording with ALLOWANCE balance deduction in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T172 [P] [US8] Write integration test for data usage recording with ALLOWANCE balance deduction in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T173 [P] [US8] Write integration test for SMS/MMS usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T174 [P] [US8] Write integration test for duplicate usageId validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T175 [P] [US8] Write integration test for invalid chargedPartyId (404 Not Found) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T187 [P] [US8] Write integration test for GET /subscribers/{subscriberId}/usage (list usage records) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T188 [P] [US8] Write integration test for usage list pagination (limit/offset) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T192 [P] [US8] Write integration test for ALLOWANCE balance deduction (volumeUsage < balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T193 [P] [US8] Write integration test for ALLOWANCE balance floor at 0 (volumeUsage > balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T194 [P] [US8] Write integration test for COUNTER balance addition (volumeUsage added to balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T176 [P] [US8] Write repository test for UsageRepository in src/test/java/com/telecom/ocs/provisioning/repository/UsageRepositoryTest.java
-- [ ] T177 [P] [US8] Write unit test for UsageService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/UsageServiceTest.java
+- [ ] T177 [P] [US8] Write unit test for UsageService with Mockito (including balance update logic) in src/test/java/com/telecom/ocs/provisioning/service/UsageServiceTest.java
 
 ### Implementation for User Story 8
 
 - [ ] T178 [US8] Create Usage JPA entity with usageType/recordType enums, subscriber/balance FKs in src/main/java/com/telecom/ocs/provisioning/models/Usage.java
 - [ ] T179 [US8] Create UsageRepository extending JpaRepository with findByChargedPartyId query in src/main/java/com/telecom/ocs/provisioning/repositories/UsageRepository.java
-- [ ] T180 [US8] Implement UsageService with subscriber validation, duplicate checking in src/main/java/com/telecom/ocs/provisioning/services/UsageService.java
+- [ ] T180 [US8] Implement UsageService with subscriber validation, duplicate checking, balance update logic in src/main/java/com/telecom/ocs/provisioning/services/UsageService.java
 - [ ] T181 [US8] Create UsageMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/UsageMapper.java
 - [ ] T182 [US8] Implement UsageController implementing generated UsageApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/UsageController.java
 - [ ] T183 [US8] Add chargedPartyId (subscriberId) validation logic
@@ -338,8 +341,12 @@ Single backend REST microservice structure:
 - [ ] T189 [US8] Add findByChargedPartyId query with pagination to UsageRepository
 - [ ] T190 [US8] Implement listUsageBySubscriberId method in UsageService with pagination support
 - [ ] T191 [US8] Implement GET /subscribers/{subscriberId}/usage endpoint in UsageController
+- [ ] T195 [US8] Implement ALLOWANCE balance deduction logic in UsageService (FR-096: deduct volumeUsage from balanceAvailable)
+- [ ] T196 [US8] Implement ALLOWANCE balance floor logic in UsageService (FR-097: set balanceAvailable to 0 when volumeUsage exceeds available)
+- [ ] T197 [US8] Implement COUNTER balance addition logic in UsageService (FR-098: add volumeUsage to balanceAvailable)
+- [ ] T198 [US8] Add balanceValueBefore/balanceValueAfter capture in usage record creation
 
-**Checkpoint**: Usage recording and retrieval complete - Core charging system usage tracking enabled
+**Checkpoint**: Usage recording with automatic balance updates complete - Core charging system usage tracking and balance management enabled
 
 ---
 
@@ -392,7 +399,7 @@ Single backend REST microservice structure:
 3. User Story 1 (Phase 3) → 16 tasks (MVP BASELINE)
 4. User Story 2 (Phase 4) → 16 tasks (extends MVP)
 5. User Story 3 (Phase 5) → 17 tasks (completes core P1 functionality)
-6. User Story 8 (Phase 9.5) → 17 tasks (usage recording for charging)
+6. User Story 8 (Phase 9.5) → 28 tasks (usage recording with balance updates for charging)
 7. Remaining phases can be scheduled based on priority
 
 ### Parallel Opportunities
@@ -401,6 +408,7 @@ Single backend REST microservice structure:
 - **Within Foundational**: Tasks T019-T020, T022-T025, T028-T029 = 8 parallel tasks
 - **Within Each User Story**: All test tasks marked [P] can run in parallel
 - **Across User Stories**: After Foundational phase, User Stories 7 and 4 can start in parallel with User Story 1
+- **Within User Story 8**: 13 parallel test tasks (T170-T177, T187-T188, T192-T194)
 - **Within Polish**: Tasks T151-T155, T167-T168 = 6 parallel tasks
 
 ---
@@ -433,14 +441,14 @@ T046: "Write unit test for SubscriberService"
 5. Complete Phase 4: User Story 2 (T055-T070) → ~3 days
 6. Complete Phase 5: User Story 3 (T071-T087) → ~3 days
 7. **VALIDATE CORE**: Test subscriber + subscription + balance flow
-8. Complete Phase 9.5: User Story 8 (T170-T186) → ~2 days
-9. **VALIDATE USAGE**: Test usage recording with balance impact
-10. **DEPLOY MVP**: Core P1 functionality + usage tracking ready (~14 days total)
+8. Complete Phase 9.5: User Story 8 (T170-T198) → ~3 days (includes balance update logic)
+9. **VALIDATE USAGE**: Test usage recording with automatic balance deduction/addition
+10. **DEPLOY MVP**: Core P1 functionality + usage tracking with balance updates ready (~15 days total)
 
 ### Incremental Delivery
 
 - **Week 1**: Setup + Foundational + User Story 1 → Subscriber management live
-- **Week 2**: User Story 2 + User Story 3 + User Story 8 → Core charging system + usage tracking live (MVP!)
+- **Week 2**: User Story 2 + User Story 3 + User Story 8 → Core charging system + usage tracking with balance updates live (MVP!)
 - **Week 3**: User Story 7 + User Story 4 → Audit + Groups live
 - **Week 4**: User Story 5 + User Story 6 + Polish → Full feature set + production ready
 
