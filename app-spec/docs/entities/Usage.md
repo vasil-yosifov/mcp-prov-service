@@ -73,6 +73,13 @@ The `volumeUsage` field interpretation depends on the `usageType`:
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | /usage | Create a new usage record |
+| GET | /subscribers/{subscriberId}/usage | List usage records for a subscriber (paginated) |
+
+### Pagination
+
+The GET endpoint supports pagination via query parameters:
+- `limit` (integer, 1-100): Maximum number of items to return
+- `offset` (integer, ≥0): Offset for pagination
 
 ## Example
 

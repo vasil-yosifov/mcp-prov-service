@@ -311,6 +311,36 @@ paths:
           $ref: '#/components/responses/Conflict'
       parameters:
       - $ref: '#/components/parameters/transactionId'
+  /subscribers/{subscriberId}/usage:
+    parameters:
+    - name: subscriberId
+      in: path
+      required: true
+      schema:
+        type: string
+    - $ref: '#/components/parameters/limit'
+    - $ref: '#/components/parameters/offset'
+    get:
+      summary: List usage records for a subscriber
+      description: Returns a paginated list of usage records for the specified subscriber. Use limit and offset parameters to paginate through large result sets.
+      responses:
+        '200':
+          description: List of usage records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usage'
+              examples:
+                usageList:
+                  $ref: '#/components/examples/UsageArrayExample'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/transactionId'
   /subscribers/{subscriberId}/notificationAddresses:
     parameters:
     - name: subscriberId
@@ -2215,6 +2245,57 @@ components:
       summary: A sample SMS usage record
       value:
         usageId: 770e8400-e29b-41d4-a716-446655440002
+        usageTimestamp: '2024-06-15T12:00:00Z'
+        chargedPartyId: SUB123456789
+        chargedMsisdn: '436602238811'
+        aParty: '436602238811'
+        bParty: '436602238833'
+        usageType: SMS
+        recordType: EVENT
+        recordOpeningTime: '2024-06-15T12:00:00Z'
+        recordClosingTime: '2024-06-15T12:00:00Z'
+        durationSeconds: 0
+        volumeUsage: 1
+        impactedBalanceId: BALANCE345678
+        balanceValueBefore: 100
+        balanceValueAfter: 99
+        offerId: OFFER345678
+    UsageArrayExample:
+      summary: Array of usage records
+      value:
+      - usageId: 550e8400-e29b-41d4-a716-446655440000
+        usageTimestamp: '2024-06-15T10:05:00Z'
+        chargedPartyId: SUB123456789
+        chargedMsisdn: '436602238811'
+        aParty: '436602238811'
+        bParty: '436602238822'
+        usageType: VOICE
+        recordType: STOP
+        recordOpeningTime: '2024-06-15T10:00:00Z'
+        recordClosingTime: '2024-06-15T10:05:00Z'
+        durationSeconds: 300
+        volumeUsage: 300
+        impactedBalanceId: BALANCE123456
+        balanceValueBefore: 1000
+        balanceValueAfter: 700
+        offerId: OFFER123456
+      - usageId: 660e8400-e29b-41d4-a716-446655440001
+        usageTimestamp: '2024-06-15T11:30:00Z'
+        chargedPartyId: SUB123456789
+        chargedMsisdn: '436602238811'
+        aParty: '436602238811'
+        bParty: internet.telco.com
+        usageType: DATA
+        recordType: STOP
+        recordOpeningTime: '2024-06-15T11:00:00Z'
+        recordClosingTime: '2024-06-15T11:30:00Z'
+        durationSeconds: 1800
+        volumeUsage: 104857600
+        impactedBalanceId: BALANCE789012
+        balanceValueBefore: 5368709120
+        balanceValueAfter: 5263851520
+        offerId: OFFER789012
+      - usageId: 770e8400-e29b-41d4-a716-446655440002
         usageTimestamp: '2024-06-15T12:00:00Z'
         chargedPartyId: SUB123456789
         chargedMsisdn: '436602238811'

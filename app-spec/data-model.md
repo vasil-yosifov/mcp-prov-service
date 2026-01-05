@@ -85,7 +85,9 @@ Primary relations (summary)
 - Subscriber 1 — * Usage
   - Usage.chargedPartyId = Subscriber.subscriberId. Usage records track service consumption.
   - Usage.impactedBalanceId references the Balance being decremented.
-  - Endpoint: POST [/usage](ocs-provisioing-api.yml#paths./usage)
+  - Endpoints:
+    - Create: POST [/usage](ocs-provisioing-api.yml#paths./usage)
+    - List for subscriber (paginated): GET [/subscribers/{subscriberId}/usage](ocs-provisioing-api.yml#paths./subscribers/%7BsubscriberId%7D/usage)
 
 - Balance 1 — * Usage
   - Usage.impactedBalanceId = Balance.balanceId. Each usage record impacts a specific balance.
@@ -333,6 +335,7 @@ Endpoint mapping (where to retrieve lists / single entities)
 
 - Usage
   - Create: POST /usage (see [`/usage`](ocs-provisioing-api.yml#paths./usage))
+  - List for subscriber (paginated): GET /subscribers/{subscriberId}/usage (see [`/subscribers/{subscriberId}/usage`](ocs-provisioing-api.yml#paths./subscribers/%7BsubscriberId%7D/usage))
 
 Examples (local files)
 - Subscriber example: [subscriber.json](subscriber.json)
