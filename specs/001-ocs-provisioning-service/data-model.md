@@ -294,18 +294,66 @@ Entity definitions extracted from feature specification and OpenAPI schema. All 
 
 ---
 
+### Usage
+**Description**: Represents a service consumption record for a subscriber, tracking usage of voice, data, SMS, or MMS services and their impact on balances.
+
+**Primary Key**: `usageId` (String, UUID)
+
+**Fields**:
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| usageId | String | PK, NOT NULL, UUID | Unique usage record identifier |
+| usageTimestamp | Timestamp | NOT NULL | Record creation timestamp |
+| chargedPartyId | String | FK, NOT NULL | Reference to subscriber being charged |
+| chargedMsisdn | String | NULLABLE, Pattern: `^[0-9]{11,15}$` | MSISDN being charged |
+| aParty | String | NULLABLE | Originating MSISDN |
+| bParty | String | NULLABLE | Terminating MSISDN or APN |
+| usageType | Enum | NOT NULL | Type of usage (VOICE/DATA/SMS/MMS) |
+| recordType | Enum | NOT NULL | Type of record (START/INTERIM/STOP/EVENT) |
+| recordOpeningTime | Timestamp | NULLABLE | Session start timestamp |
+| recordClosingTime | Timestamp | NULLABLE | Session end timestamp |
+| durationSeconds | Integer | NULLABLE | Duration in seconds |
+| volumeUsage | Long | NOT NULL | Usage volume (bytes/seconds/count) |
+| impactedBalanceId | String | FK, NOT NULL | Reference to impacted balance |
+| balanceValueBefore | Long | NULLABLE | Balance value before usage |
+| balanceValueAfter | Long | NULLABLE | Balance value after usage |
+| offerId | String | NULLABLE | Associated offer identifier |
+
+**Enum Values**:
+- usageType: `VOICE`, `DATA`, `SMS`, `MMS`
+- recordType: `START`, `INTERIM`, `STOP`, `EVENT`
+
+**Relationships**:
+- Many-to-One: `subscriber` → Subscriber (FK chargedPartyId)
+- Many-to-One: `balance` → Balance (FK impactedBalanceId)
+
+**Validation Rules**:
+- FR-091: Validate chargedPartyId exists (subscriber lookup)
+- FR-092: Prevent duplicate usageId
+- FR-087: volumeUsage interpretation depends on usageType (bytes for DATA, seconds for VOICE, count for SMS/MMS)
+
+**Indexes**:
+- `idx_usage_subscriber` on chargedPartyId
+- `idx_usage_balance` on impactedBalanceId
+- `idx_usage_timestamp` on usageTimestamp
+- `idx_usage_type` on usageType
+
+---
+
 ## Entity Relationship Diagram
 
 ```
-Subscriber (1) ──────< (N) Subscription (1) ──────< (N) Balance
-    │                           │
-    │                           └──────< (N) Timer
-    │
-    ├──────< (N) NotificationAddress
-    │
-    ├──────< (N) Timer
-    │
-    ├──────< (N) AccountHistory
+Subscriber (1) ──────< (N) Subscription (1) ──────< (N) Balance (1) ──────< (N) Usage
+    │                           │                           │
+    │                           └──────< (N) Timer          │
+    │                                                       │
+    ├──────< (N) NotificationAddress                        │
+    │                                                       │
+    ├──────< (N) Timer                                      │
+    │                                                       │
+    ├──────< (N) AccountHistory                             │
+    │                                                       │
+    ├──────< (N) Usage (via chargedPartyId) ────────────────┘
     │
     └──────< (N) Group (owner)
                  │
@@ -319,7 +367,7 @@ Subscriber (1) ──────< (N) Subscription (1) ──────< (N) 
 - All entities use `@Entity` annotation
 - Primary keys generated via `UUID.randomUUID()` or database strategy
 - Timestamps use `@CreatedDate` and `@LastModifiedDate` with JPA auditing enabled
-- Optimistic locking via `@Version` field (Long type)
+- Optimistic locking via `@Version` field (Long type) - Note: Usage entity does not use optimistic locking as records are immutable once created
 - Enums mapped via `@Enumerated(EnumType.STRING)` for readability
 - Foreign keys with `@ManyToOne` and `@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)`
 - JSON fields stored as String with custom converters or use Hibernate JSON types
@@ -328,8 +376,9 @@ Subscriber (1) ──────< (N) Subscription (1) ──────< (N) 
 ## Database Schema Migration
 
 Flyway migrations stored in `src/main/resources/db/migration/`:
-- `V1__initial_schema.sql` — Create all tables with constraints
+- `V1__initial_schema.sql` — Create all tables with constraints (8 entities: Subscriber, Subscription, Balance, Group, NotificationAddress, Timer, AccountHistory, Usage)
 - `V2__add_indexes.sql` — Add performance indexes
-- Future migrations numbered sequentially (V3__, V4__, etc.)
+- `V3__add_usage_table.sql` — Add usage table (if added incrementally)
+- Future migrations numbered sequentially (V4__, V5__, etc.)
 
 Migration executed automatically on Spring Boot startup or via deployment script.

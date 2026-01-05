@@ -238,6 +238,23 @@ Operators need to track all interactions and events on subscriber accounts, grou
 - **FR-060**: System MUST store interaction description, status, direction, reason, and timestamps
 - **FR-061**: System MUST support attachment metadata (id, url, type) in history entries
 
+#### Usage Management (P1)
+
+- **FR-081**: System MUST provide endpoint to create usage records for subscribers
+- **FR-082**: System MUST assign unique usageId automatically upon usage record creation
+- **FR-083**: System MUST support usageType values: VOICE, DATA, SMS, MMS
+- **FR-084**: System MUST support recordType values: START, INTERIM, STOP, EVENT
+- **FR-085**: System MUST track chargedPartyId (subscriberId) and chargedMsisdn for each usage record
+- **FR-086**: System MUST track aParty (originating) and bParty (terminating) for usage records
+- **FR-087**: System MUST track volumeUsage with appropriate units (bytes for DATA, seconds for VOICE, count for SMS/MMS)
+- **FR-088**: System MUST track impactedBalanceId linking usage to the affected balance
+- **FR-089**: System MUST store balanceValueBefore and balanceValueAfter for balance impact auditing
+- **FR-090**: System MUST track recordOpeningTime, recordClosingTime, and durationSeconds for session-based usage
+- **FR-091**: System MUST validate chargedPartyId exists (subscriber lookup) and return 404 if not found
+- **FR-092**: System MUST prevent duplicate usageId by returning 409 Conflict error
+- **FR-093**: System MUST store usageTimestamp for when the usage record was created
+- **FR-094**: System MUST support optional offerId to associate usage with specific offer
+
 #### API Standards (P1)
 
 - **FR-062**: System MUST implement health check endpoint at `/health-check` returning 200 OK when healthy
@@ -278,6 +295,8 @@ Operators need to track all interactions and events on subscriber accounts, grou
 - **Timer**: Represents a scheduled action on an entity with execution timing (absolute timerExecutionDate or relative timerExecutionRelativePeriod), entity association (timerEntityId references subscriber/subscription/group), timer name, and timestamps (createdDate, modifiedDate, expirationDate). Uniquely identified by timerId.
 
 - **AccountHistory**: Represents an audit log entry for entity interactions with interaction details (description, status, direction, reason), entity reference (entityId, entityType: SUBSCRIBER/GROUP/ACCOUNT), optional attachment metadata (id, url, type), interaction date range (startDateTime, endDateTime), and channel. Uniquely identified by interactionId.
+
+- **Usage**: Represents a service consumption record for a subscriber with usage type (VOICE, DATA, SMS, MMS), record type (START, INTERIM, STOP, EVENT), charged party details (chargedPartyId, chargedMsisdn, aParty, bParty), volume consumed (volumeUsage), balance impact (impactedBalanceId, balanceValueBefore, balanceValueAfter), session timing (recordOpeningTime, recordClosingTime, durationSeconds), and optional offer association (offerId). Uniquely identified by usageId.
 
 ## Success Criteria *(mandatory)*
 

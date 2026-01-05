@@ -8,7 +8,7 @@
 
 ## Summary
 
-Build a standalone REST microservice for telecom subscriber profile management in online charging systems. The service exposes a RESTful API conforming to OpenAPI spec `app-spec/ocs-provisioing-api.yml` with 7 core domain entities. Implementation uses Java 17, Spring Boot 3.x for application framework, Apache Camel for routing/integration patterns, Spring Data JPA for data persistence to MySQL database, and Maven for build orchestration with OpenAPI code generation. Service is containerized via Docker with multi-stage builds, orchestrated with docker-compose alongside MySQL container, and includes database schema deployment/migration scripts.
+Build a standalone REST microservice for telecom subscriber profile management in online charging systems. The service exposes a RESTful API conforming to OpenAPI spec `app-spec/ocs-provisioing-api.yml` with 8 core domain entities. Implementation uses Java 17, Spring Boot 3.x for application framework, Apache Camel for routing/integration patterns, Spring Data JPA for data persistence to MySQL database, and Maven for build orchestration with OpenAPI code generation. Service is containerized via Docker with multi-stage builds, orchestrated with docker-compose alongside MySQL container, and includes database schema deployment/migration scripts.
 
 ## Technical Context
 
@@ -129,6 +129,7 @@ mcp-prov-service/
 │   │   │       │   ├── NotificationAddressController.java
 │   │   │       │   ├── TimerController.java
 │   │   │       │   ├── AccountHistoryController.java
+│   │   │       │   ├── UsageController.java
 │   │   │       │   └── HealthCheckController.java
 │   │   │       ├── services/                           # Business logic layer
 │   │   │       │   ├── SubscriberService.java
@@ -137,7 +138,8 @@ mcp-prov-service/
 │   │   │       │   ├── GroupService.java
 │   │   │       │   ├── NotificationAddressService.java
 │   │   │       │   ├── TimerService.java
-│   │   │       │   └── AccountHistoryService.java
+│   │   │       │   ├── AccountHistoryService.java
+│   │   │       │   └── UsageService.java
 │   │   │       ├── repositories/                       # Spring Data JPA repositories
 │   │   │       │   ├── SubscriberRepository.java
 │   │   │       │   ├── SubscriptionRepository.java
@@ -145,7 +147,8 @@ mcp-prov-service/
 │   │   │       │   ├── GroupRepository.java
 │   │   │       │   ├── NotificationAddressRepository.java
 │   │   │       │   ├── TimerRepository.java
-│   │   │       │   └── AccountHistoryRepository.java
+│   │   │       │   ├── AccountHistoryRepository.java
+│   │   │       │   └── UsageRepository.java
 │   │   │       ├── models/                             # JPA entity classes
 │   │   │       │   ├── Subscriber.java
 │   │   │       │   ├── Subscription.java
@@ -153,7 +156,8 @@ mcp-prov-service/
 │   │   │       │   ├── Group.java
 │   │   │       │   ├── NotificationAddress.java
 │   │   │       │   ├── Timer.java
-│   │   │       │   └── AccountHistory.java
+│   │   │       │   ├── AccountHistory.java
+│   │   │       │   └── Usage.java
 │   │   │       ├── dto/                                # Data Transfer Objects
 │   │   │       │   ├── requests/                       # Request payloads
 │   │   │       │   └── responses/                      # Response payloads
@@ -225,7 +229,7 @@ Deliverables created in this run:
 - `quickstart.md` — build, test, and run instructions (Maven, Docker, docker-compose)
 
 Design notes:
-- Entities map one-to-one with domain (Subscriber, Subscription, Balance, Group, NotificationAddress, Timer, AccountHistory)
+- Entities map one-to-one with domain (Subscriber, Subscription, Balance, Group, NotificationAddress, Timer, AccountHistory, Usage)
 - REST controllers implement generated interfaces for contract-first adherence
 - Apache Camel routes encapsulate cross-cutting integration patterns; REST remains Spring MVC
 - Validation via Bean Validation annotations on DTOs; global exception handler provides structured errors

@@ -305,6 +305,39 @@ Single backend REST microservice structure:
 
 ---
 
+## Phase 9.5: User Story 8 - Usage Recording (Priority: P1)
+
+**Goal**: Enable operators and charging systems to record service consumption (voice calls, data sessions, SMS, MMS) for subscribers, tracking the impact on balances for billing and quota enforcement.
+
+**Independent Test**: Create usage records for subscribers with different usage types (VOICE, DATA, SMS, MMS), verify balance impact tracking (balanceValueBefore/After), validate required fields, handle duplicate usageId conflict.
+
+### Tests for User Story 8
+
+- [ ] T170 [P] [US8] Write integration test for POST /usage (create usage record) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T171 [P] [US8] Write integration test for voice usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T172 [P] [US8] Write integration test for data usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T173 [P] [US8] Write integration test for SMS/MMS usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T174 [P] [US8] Write integration test for duplicate usageId validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T175 [P] [US8] Write integration test for invalid chargedPartyId (404 Not Found) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T176 [P] [US8] Write repository test for UsageRepository in src/test/java/com/telecom/ocs/provisioning/repository/UsageRepositoryTest.java
+- [ ] T177 [P] [US8] Write unit test for UsageService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/UsageServiceTest.java
+
+### Implementation for User Story 8
+
+- [ ] T178 [US8] Create Usage JPA entity with usageType/recordType enums, subscriber/balance FKs in src/main/java/com/telecom/ocs/provisioning/models/Usage.java
+- [ ] T179 [US8] Create UsageRepository extending JpaRepository with findByChargedPartyId query in src/main/java/com/telecom/ocs/provisioning/repositories/UsageRepository.java
+- [ ] T180 [US8] Implement UsageService with subscriber validation, duplicate checking in src/main/java/com/telecom/ocs/provisioning/services/UsageService.java
+- [ ] T181 [US8] Create UsageMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/UsageMapper.java
+- [ ] T182 [US8] Implement UsageController implementing generated UsageApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/UsageController.java
+- [ ] T183 [US8] Add chargedPartyId (subscriberId) validation logic
+- [ ] T184 [US8] Add impactedBalanceId validation logic
+- [ ] T185 [US8] Add duplicate usageId prevention logic
+- [ ] T186 [US8] Add logging for usage recording operations
+
+**Checkpoint**: Usage recording complete - Core charging system usage tracking enabled
+
+---
+
 ## Phase 10: Polish & Cross-Cutting Concerns
 
 **Purpose**: Improvements that affect multiple user stories and final delivery artifacts
@@ -344,16 +377,18 @@ Single backend REST microservice structure:
 - **User Story 4 (Phase 7)**: Depends on Foundational (Phase 2) + User Story 1 (Subscriber entity required for group members)
 - **User Story 5 (Phase 8)**: Depends on Foundational (Phase 2) + User Story 1 + User Story 4 (Subscriber and Group entities required)
 - **User Story 6 (Phase 9)**: Depends on Foundational (Phase 2) + User Story 1-3 (entities for timer associations)
+- **User Story 8 (Phase 9.5)**: Depends on Foundational (Phase 2) + User Story 1 (Subscriber) + User Story 3 (Balance for impactedBalanceId)
 - **Polish (Phase 10)**: Depends on all desired user stories being complete
 
 ### Critical Path
 
 1. Setup (Phase 1) → 17 tasks
-2. Foundational (Phase 2) → 19 tasks (CRITICAL BLOCKER)
+2. Foundational (Phase 2) → 21 tasks (CRITICAL BLOCKER)
 3. User Story 1 (Phase 3) → 16 tasks (MVP BASELINE)
 4. User Story 2 (Phase 4) → 16 tasks (extends MVP)
 5. User Story 3 (Phase 5) → 17 tasks (completes core P1 functionality)
-6. Remaining phases can be scheduled based on priority
+6. User Story 8 (Phase 9.5) → 17 tasks (usage recording for charging)
+7. Remaining phases can be scheduled based on priority
 
 ### Parallel Opportunities
 
@@ -384,7 +419,7 @@ T046: "Write unit test for SubscriberService"
 
 ## Implementation Strategy
 
-### MVP First (User Stories 1-3 Only)
+### MVP First (User Stories 1-3 + Usage)
 
 1. Complete Phase 1: Setup (T001-T017) → ~1 day
 2. Complete Phase 2: Foundational (T018-T038) → ~2 days (CRITICAL - includes validation)
@@ -393,12 +428,14 @@ T046: "Write unit test for SubscriberService"
 5. Complete Phase 4: User Story 2 (T055-T070) → ~3 days
 6. Complete Phase 5: User Story 3 (T071-T087) → ~3 days
 7. **VALIDATE CORE**: Test subscriber + subscription + balance flow
-8. **DEPLOY MVP**: Core P1 functionality ready (~12 days total)
+8. Complete Phase 9.5: User Story 8 (T170-T186) → ~2 days
+9. **VALIDATE USAGE**: Test usage recording with balance impact
+10. **DEPLOY MVP**: Core P1 functionality + usage tracking ready (~14 days total)
 
 ### Incremental Delivery
 
 - **Week 1**: Setup + Foundational + User Story 1 → Subscriber management live
-- **Week 2**: User Story 2 + User Story 3 → Core charging system live (MVP!)
+- **Week 2**: User Story 2 + User Story 3 + User Story 8 → Core charging system + usage tracking live (MVP!)
 - **Week 3**: User Story 7 + User Story 4 → Audit + Groups live
 - **Week 4**: User Story 5 + User Story 6 + Polish → Full feature set + production ready
 
@@ -406,7 +443,7 @@ T046: "Write unit test for SubscriberService"
 
 With 3 developers after Foundational phase completes:
 
-- **Developer A**: User Stories 1 → 2 → 3 (Core P1 path)
+- **Developer A**: User Stories 1 → 2 → 3 → 8 (Core P1 path + Usage)
 - **Developer B**: User Story 7 (Audit) → User Story 4 (Groups)
 - **Developer C**: User Story 5 (Notifications) → User Story 6 (Timers)
 
@@ -414,7 +451,7 @@ With 3 developers after Foundational phase completes:
 
 ## Task Summary
 
-- **Total Tasks**: 169
+- **Total Tasks**: 186
 - **Phase 1 (Setup)**: 17 tasks
 - **Phase 2 (Foundational)**: 21 tasks (includes FR-076 and FR-079 validation)
 - **Phase 3 (US1 - Subscriber)**: 16 tasks
@@ -424,13 +461,12 @@ With 3 developers after Foundational phase completes:
 - **Phase 7 (US4 - Group)**: 17 tasks
 - **Phase 8 (US5 - NotificationAddress)**: 16 tasks
 - **Phase 9 (US6 - Timer)**: 16 tasks
+- **Phase 9.5 (US8 - Usage)**: 17 tasks
 - **Phase 10 (Polish)**: 19 tasks
 
-**Parallel Opportunities**: 54 tasks marked [P] across all phases
+**Parallel Opportunities**: 62 tasks marked [P] across all phases
 
-**MVP Scope**: Phases 1-5 (User Stories 1-3) = 87 tasks → ~12 days with TDD approach
-
-**MVP Scope**: Phases 1-5 (User Stories 1-3) = 85 tasks → ~12 days with TDD approach
+**MVP Scope**: Phases 1-5 + Phase 9.5 (User Stories 1-3 + Usage) = 104 tasks → ~14 days with TDD approach
 
 ---
 
