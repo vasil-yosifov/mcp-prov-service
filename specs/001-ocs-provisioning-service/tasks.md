@@ -313,38 +313,38 @@ Single backend REST microservice structure:
 
 ### Tests for User Story 8
 
-- [ ] T170 [P] [US8] Write integration test for POST /usage (create usage record) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T171 [P] [US8] Write integration test for voice usage recording with ALLOWANCE balance deduction in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T172 [P] [US8] Write integration test for data usage recording with ALLOWANCE balance deduction in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T173 [P] [US8] Write integration test for SMS/MMS usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T174 [P] [US8] Write integration test for duplicate usageId validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T175 [P] [US8] Write integration test for invalid chargedPartyId (404 Not Found) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T187 [P] [US8] Write integration test for GET /subscribers/{subscriberId}/usage (list usage records) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T188 [P] [US8] Write integration test for usage list pagination (limit/offset) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T192 [P] [US8] Write integration test for ALLOWANCE balance deduction (volumeUsage < balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T193 [P] [US8] Write integration test for ALLOWANCE balance floor at 0 (volumeUsage > balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T194 [P] [US8] Write integration test for COUNTER balance addition (volumeUsage added to balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
-- [ ] T176 [P] [US8] Write repository test for UsageRepository in src/test/java/com/telecom/ocs/provisioning/repository/UsageRepositoryTest.java
-- [ ] T177 [P] [US8] Write unit test for UsageService with Mockito (including balance update logic) in src/test/java/com/telecom/ocs/provisioning/service/UsageServiceTest.java
+- [x] T170 [P] [US8] Write integration test for POST /usage (create usage record) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T171 [P] [US8] Write integration test for voice usage recording with ALLOWANCE balance deduction in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T172 [P] [US8] Write integration test for data usage recording with ALLOWANCE balance deduction in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T173 [P] [US8] Write integration test for SMS/MMS usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T174 [P] [US8] Write integration test for duplicate usageId validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T175 [P] [US8] Write integration test for invalid chargedPartyId (404 Not Found) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T187 [P] [US8] Write integration test for GET /subscribers/{subscriberId}/usage (list usage records) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T188 [P] [US8] Write integration test for usage list pagination (limit/offset) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T192 [P] [US8] Write integration test for ALLOWANCE balance deduction (volumeUsage < balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T193 [P] [US8] Write integration test for ALLOWANCE balance floor at 0 (volumeUsage > balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T194 [P] [US8] Write integration test for COUNTER balance addition (volumeUsage added to balanceAvailable) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [x] T176 [P] [US8] Write repository test for UsageRepository in src/test/java/com/telecom/ocs/provisioning/repository/UsageRepositoryTest.java
+- [x] T177 [P] [US8] Write unit test for UsageService with Mockito (including balance update logic) in src/test/java/com/telecom/ocs/provisioning/service/UsageServiceTest.java
 
 ### Implementation for User Story 8
 
-- [ ] T178 [US8] Create Usage JPA entity with usageType/recordType enums, subscriber/balance FKs in src/main/java/com/telecom/ocs/provisioning/models/Usage.java
-- [ ] T179 [US8] Create UsageRepository extending JpaRepository with findByChargedPartyId query in src/main/java/com/telecom/ocs/provisioning/repositories/UsageRepository.java
-- [ ] T180 [US8] Implement UsageService with subscriber validation, duplicate checking, balance update logic in src/main/java/com/telecom/ocs/provisioning/services/UsageService.java
-- [ ] T181 [US8] Create UsageMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/UsageMapper.java
-- [ ] T182 [US8] Implement UsageController implementing generated UsageApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/UsageController.java
-- [ ] T183 [US8] Add chargedPartyId (subscriberId) validation logic
-- [ ] T184 [US8] Add impactedBalanceId validation logic
-- [ ] T185 [US8] Add duplicate usageId prevention logic
-- [ ] T186 [US8] Add logging for usage recording operations
-- [ ] T189 [US8] Add findByChargedPartyId query with pagination to UsageRepository
-- [ ] T190 [US8] Implement listUsageBySubscriberId method in UsageService with pagination support
-- [ ] T191 [US8] Implement GET /subscribers/{subscriberId}/usage endpoint in UsageController
-- [ ] T195 [US8] Implement ALLOWANCE balance deduction logic in UsageService (FR-096: deduct volumeUsage from balanceAvailable)
-- [ ] T196 [US8] Implement ALLOWANCE balance floor logic in UsageService (FR-097: set balanceAvailable to 0 when volumeUsage exceeds available)
-- [ ] T197 [US8] Implement COUNTER balance addition logic in UsageService (FR-098: add volumeUsage to balanceAvailable)
-- [ ] T198 [US8] Add balanceValueBefore/balanceValueAfter capture in usage record creation
+- [x] T178 [US8] Create Usage JPA entity with usageType/recordType enums, subscriber/balance FKs in src/main/java/com/telecom/ocs/provisioning/models/Usage.java
+- [x] T179 [US8] Create UsageRepository extending JpaRepository with findByChargedPartyId query in src/main/java/com/telecom/ocs/provisioning/repositories/UsageRepository.java
+- [x] T180 [US8] Implement UsageService with subscriber validation, duplicate checking, balance update logic in src/main/java/com/telecom/ocs/provisioning/services/UsageService.java
+- [x] T181 [US8] Create UsageMapper for entity ↔ DTO conversion in src/main/java/com/telecom/ocs/provisioning/mappers/UsageMapper.java
+- [x] T182 [US8] Implement UsageController implementing generated UsageApi interface in src/main/java/com/telecom/ocs/provisioning/controllers/UsageController.java
+- [x] T183 [US8] Add chargedPartyId (subscriberId) validation logic
+- [x] T184 [US8] Add impactedBalanceId validation logic
+- [x] T185 [US8] Add duplicate usageId prevention logic
+- [x] T186 [US8] Add logging for usage recording operations
+- [x] T189 [US8] Add findByChargedPartyId query with pagination to UsageRepository
+- [x] T190 [US8] Implement listUsageBySubscriberId method in UsageService with pagination support
+- [x] T191 [US8] Implement GET /subscribers/{subscriberId}/usage endpoint in UsageController
+- [x] T195 [US8] Implement ALLOWANCE balance deduction logic in UsageService (FR-096: deduct volumeUsage from balanceAvailable)
+- [x] T196 [US8] Implement ALLOWANCE balance floor logic in UsageService (FR-097: set balanceAvailable to 0 when volumeUsage exceeds available)
+- [x] T197 [US8] Implement COUNTER balance addition logic in UsageService (FR-098: add volumeUsage to balanceAvailable)
+- [x] T198 [US8] Add balanceValueBefore/balanceValueAfter capture in usage record creation
 
 **Checkpoint**: Usage recording with automatic balance updates complete - Core charging system usage tracking and balance management enabled
 
