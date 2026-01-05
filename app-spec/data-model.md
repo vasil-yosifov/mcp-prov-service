@@ -10,6 +10,7 @@ Referenced schemas
 - [`components.schemas.NotificationAddress`](ocs-provisioing-api.yml#components.schemas.NotificationAddress) — [ocs-provisioing-api.yml](ocs-provisioing-api.yml) / example: [notificationAddress.json](notificationAddress.json)
 - [`components.schemas.Timer`](ocs-provisioing-api.yml#components.schemas.Timer) — [ocs-provisioing-api.yml](ocs-provisioing-api.yml) / example: [timer.json](timer.json)
 - [`components.schemas.AccountHistory`](ocs-provisioing-api.yml#components.schemas.AccountHistory) — [ocs-provisioing-api.yml](ocs-provisioing-api.yml) / example: [accountHistory.json](accountHistory.json)
+- [`components.schemas.Usage`](ocs-provisioing-api.yml#components.schemas.Usage) — [ocs-provisioing-api.yml](ocs-provisioing-api.yml) / example: [usage.json](usage.json)
 
 Overview
 - Subscriber is a top-level actor. A Subscriber may own subscriptions, notification addresses, belong to groups and have timers and account history entries.
@@ -44,6 +45,13 @@ Overview
   - Example instance: [accountHistory.json](accountHistory.json)
   - Schema: [`components.schemas.AccountHistory`](ocs-provisioing-api.yml#components.schemas.AccountHistory)
 
+- Usage records consumption of services (VOICE, DATA, SMS, MMS) by a subscriber. Each usage record references `chargedPartyId` (subscriberId) and `impactedBalanceId`, and is uniquely identified by `usageId`.
+  - Example instance: [usage.json](usage.json)
+  - Schema: [`components.schemas.Usage`](ocs-provisioing-api.yml#components.schemas.Usage)
+  - Key enums:
+    - `usageType`: VOICE, DATA, SMS, MMS
+    - `recordType`: START, INTERIM, STOP, EVENT
+
 Primary relations (summary)
 - Subscriber 1 — * Subscription
   - Subscription.subscriptionId references a subscription; Subscription.subscriberId = Subscriber.subscriberId.
@@ -73,6 +81,14 @@ Primary relations (summary)
 - Entity 1 — * AccountHistory
   - AccountHistory.entityId + entityType link entries to the owner entity (Subscriber, Group, Account).
   - Endpoints: create/list by entity: [/accountHistory](ocs-provisioing-api.yml#paths./accountHistory) and [/accountHistory/{entityId}](ocs-provisioing-api.yml#paths./accountHistory/%7BentityId%7D). Get by interactionId: [/accountHistory/{interactionId}](ocs-provisioing-api.yml#paths./accountHistory/%7BinteractionId%7D)
+
+- Subscriber 1 — * Usage
+  - Usage.chargedPartyId = Subscriber.subscriberId. Usage records track service consumption.
+  - Usage.impactedBalanceId references the Balance being decremented.
+  - Endpoint: POST [/usage](ocs-provisioing-api.yml#paths./usage)
+
+- Balance 1 — * Usage
+  - Usage.impactedBalanceId = Balance.balanceId. Each usage record impacts a specific balance.
 
 ## ER diagram (Mermaid)
 
@@ -119,6 +135,14 @@ erDiagram
     string entityType
     string eventType
   }
+  USAGE {
+    string usageId PK
+    string chargedPartyId FK
+    string impactedBalanceId FK
+    string usageType
+    string recordType
+    number volumeUsage
+  }
 
   SUBSCRIBER ||--o{ SUBSCRIPTION : "owns"
   SUBSCRIPTION ||--o{ BALANCE : "has"
@@ -130,6 +154,8 @@ erDiagram
   GROUP ||--o{ TIMER : "schedules"
   SUBSCRIBER ||--o{ ACCOUNT_HISTORY : "history"
   GROUP ||--o{ ACCOUNT_HISTORY : "history"
+  SUBSCRIBER ||--o{ USAGE : "consumes"
+  BALANCE ||--o{ USAGE : "impacted_by"
 ```
 
 Cardinality and constraints
@@ -140,6 +166,7 @@ Cardinality and constraints
   - Group.groupId — primary identifier for Group.
   - NotificationAddress.notificationAddressId — primary identifier for NotificationAddress.
   - Timer.timerId — primary identifier for Timer.
+  - Usage.usageId — primary identifier for Usage record.
 
     ## PlantUML class diagram
 
@@ -219,6 +246,18 @@ Cardinality and constraints
         description : String
         status : String
       }
+
+      class Usage {
+        +usageId : String
+        chargedPartyId : String
+        chargedMsisdn : String
+        usageType : String
+        recordType : String
+        volumeUsage : Number
+        impactedBalanceId : String
+        balanceValueBefore : Number
+        balanceValueAfter : Number
+      }
     }
 
     ' Associations / cardinality
@@ -236,6 +275,10 @@ Cardinality and constraints
     ' AccountHistory entries relate to entities (subscriber/group/account)
     AccountHistory "0..*" --> "1" Subscriber : "entityId when entityType=SUBSCRIBER"
     AccountHistory "0..*" --> "1" Group : "entityId when entityType=GROUP"
+
+    ' Usage records relate to subscriber and balance
+    Usage "0..*" --> "1" Subscriber : "chargedPartyId = subscriberId"
+    Usage "0..*" --> "1" Balance : "impactedBalanceId = balanceId"
 
     @enduml
     ```
@@ -288,6 +331,9 @@ Endpoint mapping (where to retrieve lists / single entities)
   - List for entity: GET /accountHistory/{entityId}
   - Get by interactionId: GET /accountHistory/{interactionId}
 
+- Usage
+  - Create: POST /usage (see [`/usage`](ocs-provisioing-api.yml#paths./usage))
+
 Examples (local files)
 - Subscriber example: [subscriber.json](subscriber.json)
 - Subscription example: [subscription.json](subscription.json)
@@ -296,6 +342,7 @@ Examples (local files)
 - NotificationAddress example: [notificationAddress.json](notificationAddress.json)
 - Timer example: [timer.json](timer.json)
 - AccountHistory example: [accountHistory.json](accountHistory.json)
+- Usage example: [usage.json](usage.json)
 
 Notes & migration guidance
 - Top-level collection GET endpoints that returned full lists have been removed (see changelog: [CHANGELOG.md](CHANGELOG.md) and API info in [ocs-provisioing-api.yml](ocs-provisioing-api.yml)). Prefer scoped endpoints with pagination (limit/offset) such as GET /subscribers/{subscriberId}/subscriptions or GET /accountHistory/{entityId}.

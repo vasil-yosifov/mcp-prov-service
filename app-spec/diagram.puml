@@ -149,6 +149,25 @@ package "Entities" {
     interactionDate.startDateTime : date-time
     interactionDate.endDateTime : date-time
   }
+
+  class Usage {
+    +usageId : string
+    usageTimestamp : date-time
+    chargedPartyId : string
+    chargedMsisdn : string
+    aParty : string
+    bParty : string
+    usageType : enum
+    recordType : enum
+    recordOpeningTime : date-time
+    recordClosingTime : date-time
+    durationSeconds : integer
+    volumeUsage : number
+    impactedBalanceId : string
+    balanceValueBefore : number
+    balanceValueAfter : number
+    offerId : string
+  }
 }
 
 ' Associations / cardinality
@@ -166,5 +185,9 @@ Timer "0..*" --> "1" Group : "timerEntityId = groupId (optional)"
 ' AccountHistory entries relate to entities (subscriber/group/account)
 AccountHistory "0..*" --> "1" Subscriber : "entityId when entityType=SUBSCRIBER"
 AccountHistory "0..*" --> "1" Group : "entityId when entityType=GROUP"
+
+' Usage records relate to subscriber and balance
+Usage "0..*" --> "1" Subscriber : "chargedPartyId = subscriberId"
+Usage "0..*" --> "1" Balance : "impactedBalanceId = balanceId"
 
 @enduml

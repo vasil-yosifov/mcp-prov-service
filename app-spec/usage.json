@@ -1,0 +1,18 @@
+{
+    "usageId" : "UUID-1234-5678-9012 (Unique identifier for the usage record)",
+    "usageTimestamp" : "2024-06-15T10:00:00Z (Record creation timestamp, ISO 8601 format)",
+    "chargedPartyId" : "SUB123456789 (Subscriber ID being charged)",
+    "chargedMsisdn" : "436602238811 (MSISDN being charged)",
+    "aParty" : "436602238811 (originating MSISDN)",
+    "bParty" : "436602238822 (terminating MSISDN or APN in case of data session)",
+    "usageType" : "VOICE|DATA|SMS|MMS (Type of usage)",
+    "recordType" : "START|INTERIM|STOP|EVENT (Type of record)",
+    "recordOpeningTime" : "2024-06-15T10:00:00Z (Record opening timestamp, ISO 8601 format)",
+    "recordClosingTime" : "2024-06-15T10:05:00Z (Record closing timestamp, ISO 8601 format)",
+    "durationSeconds" : "300 (Record duration in seconds - calculated as closing time minus opening time)",
+    "volumeUsage" : "1 (usage volume in bytes for data, count for SMS/MMS, seconds for voice)",
+    "impactedBalanceId" : "BALANCE123456 (ID of the balance impacted by this usage record)",
+    "balanceValueBefore" : "100 (Balance available value before usage)",
+    "balanceValueAfter" : "99 (Balance available value after usage)",
+    "offerId" : "OFFER123456 (Associated offer ID)"
+}
