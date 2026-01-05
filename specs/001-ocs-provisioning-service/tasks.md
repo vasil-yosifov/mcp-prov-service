@@ -319,6 +319,8 @@ Single backend REST microservice structure:
 - [ ] T173 [P] [US8] Write integration test for SMS/MMS usage recording in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T174 [P] [US8] Write integration test for duplicate usageId validation (409 Conflict) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T175 [P] [US8] Write integration test for invalid chargedPartyId (404 Not Found) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T187 [P] [US8] Write integration test for GET /subscribers/{subscriberId}/usage (list usage records) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
+- [ ] T188 [P] [US8] Write integration test for usage list pagination (limit/offset) in src/test/java/com/telecom/ocs/provisioning/integration/UsageIntegrationTest.java
 - [ ] T176 [P] [US8] Write repository test for UsageRepository in src/test/java/com/telecom/ocs/provisioning/repository/UsageRepositoryTest.java
 - [ ] T177 [P] [US8] Write unit test for UsageService with Mockito in src/test/java/com/telecom/ocs/provisioning/service/UsageServiceTest.java
 
@@ -333,8 +335,11 @@ Single backend REST microservice structure:
 - [ ] T184 [US8] Add impactedBalanceId validation logic
 - [ ] T185 [US8] Add duplicate usageId prevention logic
 - [ ] T186 [US8] Add logging for usage recording operations
+- [ ] T189 [US8] Add findByChargedPartyId query with pagination to UsageRepository
+- [ ] T190 [US8] Implement listUsageBySubscriberId method in UsageService with pagination support
+- [ ] T191 [US8] Implement GET /subscribers/{subscriberId}/usage endpoint in UsageController
 
-**Checkpoint**: Usage recording complete - Core charging system usage tracking enabled
+**Checkpoint**: Usage recording and retrieval complete - Core charging system usage tracking enabled
 
 ---
 
@@ -451,7 +456,7 @@ With 3 developers after Foundational phase completes:
 
 ## Task Summary
 
-- **Total Tasks**: 186
+- **Total Tasks**: 191
 - **Phase 1 (Setup)**: 17 tasks
 - **Phase 2 (Foundational)**: 21 tasks (includes FR-076 and FR-079 validation)
 - **Phase 3 (US1 - Subscriber)**: 16 tasks
@@ -461,12 +466,12 @@ With 3 developers after Foundational phase completes:
 - **Phase 7 (US4 - Group)**: 17 tasks
 - **Phase 8 (US5 - NotificationAddress)**: 16 tasks
 - **Phase 9 (US6 - Timer)**: 16 tasks
-- **Phase 9.5 (US8 - Usage)**: 17 tasks
+- **Phase 9.5 (US8 - Usage)**: 22 tasks (includes GET usage list endpoint)
 - **Phase 10 (Polish)**: 19 tasks
 
-**Parallel Opportunities**: 62 tasks marked [P] across all phases
+**Parallel Opportunities**: 64 tasks marked [P] across all phases
 
-**MVP Scope**: Phases 1-5 + Phase 9.5 (User Stories 1-3 + Usage) = 104 tasks → ~14 days with TDD approach
+**MVP Scope**: Phases 1-5 + Phase 9.5 (User Stories 1-3 + Usage) = 109 tasks → ~14 days with TDD approach
 
 ---
 

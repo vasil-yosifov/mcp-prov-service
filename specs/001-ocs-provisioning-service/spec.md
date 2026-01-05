@@ -140,6 +140,26 @@ Operators need to track all interactions and events on subscriber accounts, grou
 
 ---
 
+### User Story 8 - Usage Recording (Priority: P1)
+
+Operators and charging systems need to record and retrieve service consumption records (voice calls, data sessions, SMS, MMS) for subscribers, tracking the impact on balances for billing, quota enforcement, and usage analysis.
+
+**Why this priority**: Usage recording is essential for the online charging system to track actual service consumption. Without usage records, there's no visibility into what subscribers have consumed and billing cannot be reconciled.
+
+**Independent Test**: Can be fully tested by creating usage records for different usage types (VOICE, DATA, SMS, MMS), validating subscriber and balance references, retrieving usage history for a subscriber with pagination, and handling duplicate usageId conflicts. Delivers value by enabling consumption tracking and billing reconciliation.
+
+**Acceptance Scenarios**:
+
+1. **Given** active subscriber with valid balance, **When** charging system creates voice usage record with durationSeconds=300, **Then** system creates usage record with usageType=VOICE, records balanceValueBefore and balanceValueAfter
+2. **Given** active subscriber with data balance, **When** charging system creates data usage record with volumeUsage=104857600 (100MB), **Then** system creates usage record with usageType=DATA and impactedBalanceId reference
+3. **Given** subscriber with SMS balance, **When** charging system creates SMS usage record with volumeUsage=1, **Then** system creates usage record with usageType=SMS and recordType=EVENT
+4. **Given** duplicate usageId already exists, **When** charging system attempts to create usage record with same usageId, **Then** system rejects with 409 Conflict error
+5. **Given** invalid chargedPartyId (non-existent subscriber), **When** charging system attempts to create usage record, **Then** system rejects with 404 Not Found error
+6. **Given** subscriber with multiple usage records, **When** operator retrieves usage for subscriberId, **Then** system returns chronologically ordered list of all usage records
+7. **Given** subscriber with 1000+ usage records, **When** operator retrieves usage with limit=50 and offset=100, **Then** system returns paginated results with 50 records starting from offset 100
+
+---
+
 ### Edge Cases
 
 - What happens when subscriber is deleted but has active subscriptions? **System must cascade delete or reject deletion with error indicating dependent entities exist**
@@ -254,6 +274,7 @@ Operators need to track all interactions and events on subscriber accounts, grou
 - **FR-092**: System MUST prevent duplicate usageId by returning 409 Conflict error
 - **FR-093**: System MUST store usageTimestamp for when the usage record was created
 - **FR-094**: System MUST support optional offerId to associate usage with specific offer
+- **FR-095**: System MUST provide endpoint to list usage records for a specific subscriber with pagination (limit/offset)
 
 #### API Standards (P1)
 

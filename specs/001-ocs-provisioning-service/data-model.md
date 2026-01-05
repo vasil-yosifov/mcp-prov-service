@@ -338,6 +338,10 @@ Entity definitions extracted from feature specification and OpenAPI schema. All 
 - `idx_usage_timestamp` on usageTimestamp
 - `idx_usage_type` on usageType
 
+**API Endpoints**:
+- Create: POST /usage
+- List for subscriber (paginated): GET /subscribers/{subscriberId}/usage
+
 ---
 
 ## Entity Relationship Diagram
